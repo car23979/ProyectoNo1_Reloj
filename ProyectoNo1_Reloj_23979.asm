@@ -42,26 +42,7 @@ INICIO:
     // Inicializar Timer0
     CALL    INICIALIZAR_TIMER
 
-CONFIGURAR_BOTONES:
-	//CONFIGURACIÓN DE PUERTOS
 
-    // Configurar PORTC como entrada
-    LDI     R16, 0x00
-    OUT     DDRC, R16
-
-	// Habilitar pull-ups internos en PC0-PC3
-    LDI     R16, 0x0F
-    OUT     PORTC, R16
-
-    // Configurar PORTB como salida para selección de displays
-    LDI     R16, 0xFF		// 0b00001111 (PB0-PB3 como salidas)
-    OUT     DDRB, R16
-    
-	// Configurar PORD como salida para segmentos de displays
-	LDI		R16, 0xFE		// 0b11111110 (PD1-PD7 como salidas, PD0 reservado para buzzer)
-	OUT     DDRD, R16
-
-	RET
 
     LDI     R16, 0x00
     OUT     PORTB, R16
@@ -195,6 +176,28 @@ PCINT_ISR:
     RETI
 
 // MODIFICACIONES NUEVAS
+
+CONFIGURAR_BOTONES:
+	//CONFIGURACIÓN DE PUERTOS
+
+    // Configurar PORTC como entrada
+    LDI     R16, 0x00
+    OUT     DDRC, R16
+
+	// Habilitar pull-ups internos en PC0-PC3
+    LDI     R16, 0x0F
+    OUT     PORTC, R16
+
+    // Configurar PORTB como salida para selección de displays
+    LDI     R16, 0xFF		// 0b00001111 (PB0-PB3 como salidas)
+    OUT     DDRB, R16
+    
+	// Configurar PORD como salida para segmentos de displays
+	LDI		R16, 0xFE		// 0b11111110 (PD1-PD7 como salidas, PD0 reservado para buzzer)
+	OUT     DDRD, R16
+
+	RET
+
 TIMER0_ISR:
     PUSH    R16
     IN      R16, SREG
