@@ -251,6 +251,13 @@ INC_HORA:
 FIN_INC:
 	RET
 
+DECREMENTAR_VALOR:
+	CPI		MODE, 1		// Si estamos en modo Hora
+	BREQ	INC_HORA	
+	CPI		MODE, 2		// Si estamos en modo Fecha
+	BREQ	FIN_INC
+	RET
+
 CONFIGURAR_PUERTOS:
     // Configurar PORTB como salida para selección de displays
     LDI     R16, 0xFF		// 0b00001111 (PB0-PB3 como salidas)
