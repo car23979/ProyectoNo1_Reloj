@@ -191,6 +191,7 @@ PCINT_ISR:
     CALL    DECREMENTAR_CONTADOR
     RETI
 
+// MODIFICACIONES NUEVAS
 TIMER0_ISR:
     PUSH    R16
     IN      R16, SREG
@@ -206,6 +207,13 @@ TIMER0_ISR:
 CONTINUAR:
 	// Apagar todos los displays
 	LDI		R16, 0x00
+	OUT		PORTB, R16
+
+	// Selección de displays correspondientes
+	LDI		ZL, LOW(DIGITO_DISPLAY << 1)
+	LDI		ZH, HIGH(DIGITO_DISPLAY << 1)
+	ADD		ZL, DISPLAY_INDEX
+	LPM		R16, Z
 	OUT		PORTB, R16
 
 
