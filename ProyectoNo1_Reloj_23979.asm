@@ -258,6 +258,10 @@ INC_DIA:
 	PUSH	R30
 	PUSH	R31
 
+	// Cambiar indice (1-12) a (0-11)
+	MOV		R26, MES
+
+
 
 
 DECREMENTAR_VALOR:
