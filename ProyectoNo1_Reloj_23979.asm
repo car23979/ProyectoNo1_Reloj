@@ -268,6 +268,7 @@ INC_DIA:
 	
 	// Sumar al indice para acceder al valor correcto
 	ADD		R30, R26	// R30 apunta a DIAS_MAX
+	LD		R16, Z
 
 
 
