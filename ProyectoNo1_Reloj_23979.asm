@@ -267,7 +267,8 @@ INC_DIA:
 	LDI		R31, HIGH(DIAS_MAX)
 	
 	// Sumar al indice para acceder al valor correcto
-	ADD		
+	ADD		R30, R26	// R30 apunta a DIAS_MAX
+
 
 
 DECREMENTAR_VALOR:
