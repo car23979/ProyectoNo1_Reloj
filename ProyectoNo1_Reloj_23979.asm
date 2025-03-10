@@ -188,6 +188,10 @@ CONFIGURAR_BOTONES:
     LDI     R16, 0x0F
     OUT     PORTC, R16
 
+	// Habilitar interrupciones de cambio de pin (PCINT1 para PORTC)
+	LDI		R16, (1 << ´PCIE1)
+	STS		PCICR, R16
+
 CONFIGURAR_PUERTOS:
     // Configurar PORTB como salida para selección de displays
     LDI     R16, 0xFF		// 0b00001111 (PB0-PB3 como salidas)
