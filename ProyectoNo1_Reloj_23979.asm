@@ -251,8 +251,14 @@ INC_HORA:
 FIN_INC:
 	RET
 
-INC_DIA:
-	
+INC_DIA:	
+	// Cuando llegue a 1, se va a reiniciar día maximo y va a ir al mes anterior mes
+	PUSH	R16
+	PUSH	R26
+	PUSH	R30
+	PUSH	R31
+
+
 
 DECREMENTAR_VALOR:
 	CPI		MODE, 1		// Si estamos en modo Hora
@@ -270,7 +276,7 @@ DEC_HORA:
 FIN_DEC:
 	RET
 
-DEC_DIA:
+DEC_DIA:	
 	PUSH	R16
 	PUSH	R26
 	PUSH	R30
