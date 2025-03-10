@@ -198,10 +198,10 @@ TIMER0_ISR:
 
 	// Incrementar índice del display actual
 
-    INC     R22  // Incrementar contador de interrupciones
-    CPI     R22, 100  // Comparar con 100
-    BRNE    FIN_ISR  // Si no es 100, salir
-    CLR     R22  // Reiniciar contador
+    INC     DISPLAY_INDEX  // Incrementar contador de interrupciones
+    CPI     DISPLAY_INDEX, 4  // Si llega a 4, reiniciar a 0
+    BRNE    CONTINUAR
+    CLR     DISPLAY_INDEX  // Reiniciar contador
 
     INC     UNIDADES  // Incrementar unidades
     CPI     UNIDADES, 10
