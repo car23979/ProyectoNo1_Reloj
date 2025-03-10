@@ -220,7 +220,7 @@ CONTINUAR:
 	LDI		ZL, LOW(TABLA_DISPLAY << 1)
 	LDI		ZH, HIGH(TABLA_DISPLAY << 1)
 	LD		R16, Z
-
+	OUT		PORTD, R16	// Enviar al display
 
 
     INC     UNIDADES  // Incrementar unidades
