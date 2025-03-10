@@ -251,6 +251,9 @@ INC_HORA:
 FIN_INC:
 	RET
 
+INC_DIA:
+	
+
 DECREMENTAR_VALOR:
 	CPI		MODE, 1		// Si estamos en modo Hora
 	BREQ	DEC_HORA	
@@ -266,6 +269,9 @@ DEC_HORA:
 
 FIN_DEC:
 	RET
+
+DEC_DIA:
+	
 
 CONFIGURAR_PUERTOS:
     // Configurar PORTB como salida para selección de displays
