@@ -207,6 +207,11 @@ BOTON_ISR:
 	// Leer estados de los botones en PORTC
 	IN		R16, PINC
 
+	// Botón1 (PC0) cambio de modo
+	SBIC	R16, PC0
+	RJMP	CAMBIAR_MODO
+
+	
 
 CONFIGURAR_PUERTOS:
     // Configurar PORTB como salida para selección de displays
