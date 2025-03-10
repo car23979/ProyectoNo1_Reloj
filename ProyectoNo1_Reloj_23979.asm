@@ -276,7 +276,12 @@ INC_DIA:
 
 	// Si DIA es igual al maximo se reinicia 1 y avanza Mes
 	LDI		DIA, 1
-
+	INC		MES
+	CPI		MES, 13
+	BRNE	FIN_INC_DIA
+	LDI		MES, 1		// Si Mes es 13, reiniciar en 1 (Enero)
+	
+	RJMP	FIN_INC_DIA 
 
 DECREMENTAR_VALOR:
 	CPI		MODE, 1		// Si estamos en modo Hora
