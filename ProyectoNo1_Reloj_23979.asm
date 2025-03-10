@@ -216,6 +216,11 @@ CONTINUAR:
 	LPM		R16, Z
 	OUT		PORTB, R16
 
+	// Obtener número correspondiente 
+	LDI		ZL, LOW(TABLA_DISPLAY << 1)
+	LDI		ZH, HIGH(TABLA_DISPLAY << 1)
+	LD		
+
 
     INC     UNIDADES  // Incrementar unidades
     CPI     UNIDADES, 10
