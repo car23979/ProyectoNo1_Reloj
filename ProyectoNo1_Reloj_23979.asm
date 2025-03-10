@@ -230,6 +230,9 @@ BOTON_ISR:
 	POP		R16
 	RETI
 
+CAMBIAR_MODO:
+
+
 CONFIGURAR_PUERTOS:
     // Configurar PORTB como salida para selección de displays
     LDI     R16, 0xFF		// 0b00001111 (PB0-PB3 como salidas)
