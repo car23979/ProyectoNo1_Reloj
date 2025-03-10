@@ -271,6 +271,7 @@ FIN_DEC:
 	RET
 
 DEC_DIA:
+	DEC		DIA
 	
 
 CONFIGURAR_PUERTOS:
@@ -341,4 +342,4 @@ TABLA_DISPLAY:
 
 // Tabla de Meses
 DIAS_MAX:
-	.DB 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+	.DB 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31	// Enero - Diciembre
