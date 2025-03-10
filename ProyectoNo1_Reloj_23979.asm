@@ -30,7 +30,7 @@
     OUT     SPL, R16
     LDI     R16, HIGH(RAMEND)
     OUT     SPH, R16
-
+/*
 // Inicio del programa
 INICIO:
     // Configurar Prescaler
@@ -174,6 +174,8 @@ PCINT_ISR:
     SBRS    R18, 1  // Si PC1 está alto, decrementar
     CALL    DECREMENTAR_CONTADOR
     RETI
+
+*/
 
 // MODIFICACIONES NUEVAS
 
