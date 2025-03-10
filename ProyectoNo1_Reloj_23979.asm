@@ -270,6 +270,10 @@ INC_DIA:
 	ADD		R30, R26	// R30 apunta a DIAS_MAX
 	LD		R16, Z
 
+	// Comparar día maximo con lo maximo permitido
+	CP		DIA, R16
+
+
 
 
 DECREMENTAR_VALOR:
