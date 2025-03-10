@@ -74,11 +74,7 @@ BUCLE_PRINCIPAL:
     RJMP    BUCLE_PRINCIPAL
 
 // SUBRUTINAS
-INCREMENTAR_CONTADOR:
-    INC     CONTADOR
-    CPI     CONTADOR, 0x10  // Reiniciar si llega a 16
-    BRNE    NO_RESET
-    LDI     CONTADOR, 0x00
+
 
 NO_RESET:
     OUT     PORTB, CONTADOR
@@ -238,6 +234,12 @@ CAMBIAR_MODO:
 
 FIN_CAMBIAR
 	RET
+
+INCREMENTAR_CONTADOR:
+    INC     CONTADOR
+    CPI     CONTADOR, 0x10  // Reiniciar si llega a 16
+    BRNE    NO_RESET
+    LDI     CONTADOR, 0x00
 
 CONFIGURAR_PUERTOS:
     // Configurar PORTB como salida para selección de displays
