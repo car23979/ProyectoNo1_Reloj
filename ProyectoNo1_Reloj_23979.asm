@@ -219,7 +219,8 @@ CONTINUAR:
 	// Obtener número correspondiente 
 	LDI		ZL, LOW(TABLA_DISPLAY << 1)
 	LDI		ZH, HIGH(TABLA_DISPLAY << 1)
-	LD		
+	LD		R16, Z
+
 
 
     INC     UNIDADES  // Incrementar unidades
