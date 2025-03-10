@@ -316,3 +316,7 @@ FIN_ISR:
 // Tabla de segmentos (ánodo común)
 TABLA_DISPLAY:
     .DB 0xC0, 0xF9, 0xA4, 0xB0, 0x99, 0x92, 0x82, 0xF8, 0x80, 0x90
+
+// Tabla de Meses
+DIAS_MAX:
+	.DB 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
