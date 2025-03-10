@@ -236,13 +236,20 @@ FIN_CAMBIAR
 	RET
 
 INCREMENTAR_VALOR:
-
+	CPI		MODE, 1		// Si estamos en modo Hora
+	BREQ	INC_HORA	
+	CPI		MODE, 2		// Si estamos en modo Fecha
+	BREQ	FIN_INC
+	RET
 
 INC_HORA:
     INC     HORA
     CPI     HORA, 24  // Si llega a 24, reiniciar 0
     BRNE    FIN_INC
     CLR		HORA
+
+FIN_INC:
+	RET
 
 CONFIGURAR_PUERTOS:
     // Configurar PORTB como salida para selección de displays
