@@ -265,8 +265,9 @@ INC_DIA:
 	// Cargar DIAS_MAX en Z
 	LDI		R30, LOW(DIAS_MAX)
 	LDI		R31, HIGH(DIAS_MAX)
-	 
-
+	
+	// Sumar al indice para acceder al valor correcto
+	ADD		
 
 
 DECREMENTAR_VALOR:
