@@ -215,7 +215,9 @@ BOTON_ISR:
 	SBIC	R16, PC1
 	RJMP	INCREMENTAR_VALOR
 
-	
+	// Botón3 (PC2) decrementar
+	SBIC	R16, PC2
+	RJMP	DECREMENTAR_VALOR
 
 CONFIGURAR_PUERTOS:
     // Configurar PORTB como salida para selección de displays
