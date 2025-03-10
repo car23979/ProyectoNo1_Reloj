@@ -42,12 +42,15 @@ INICIO:
     // Inicializar Timer0
     CALL    INICIALIZAR_TIMER
 
+CONFIGURAR_BOTONES:
 	//CONFIGURACIÓN DE PUERTOS
 
-    // Configurar PORTC como entrada con pull-up
+    // Configurar PORTC como entrada
     LDI     R16, 0x00
     OUT     DDRC, R16
-    LDI     R16, 0xFF
+
+	// Habilitar pull-ups internos en PC0-PC3
+    LDI     R16, 0x0F
     OUT     PORTC, R16
 
     // Configurar PORTB como salida para selección de displays
