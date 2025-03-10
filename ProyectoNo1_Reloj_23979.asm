@@ -204,6 +204,9 @@ BOTON_ISR:
 	IN		R16, SREG
 	PUSH	R16
 
+	// Leer estados de los botones en PORTC
+	IN		R16, PINC
+
 
 CONFIGURAR_PUERTOS:
     // Configurar PORTB como salida para selección de displays
