@@ -235,11 +235,14 @@ CAMBIAR_MODO:
 FIN_CAMBIAR
 	RET
 
-INCREMENTAR_CONTADOR:
-    INC     CONTADOR
-    CPI     CONTADOR, 0x10  // Reiniciar si llega a 16
-    BRNE    NO_RESET
-    LDI     CONTADOR, 0x00
+INCREMENTAR_VALOR:
+
+
+INC_HORA:
+    INC     HORA
+    CPI     HORA, 24  // Si llega a 24, reiniciar 0
+    BRNE    FIN_INC
+    CLR		HORA
 
 CONFIGURAR_PUERTOS:
     // Configurar PORTB como salida para selección de displays
