@@ -57,6 +57,9 @@ INICIO:
 	// Configurar PORD como salida para segmentos de displays
 	LDI		R16, 0xFE		// 0b11111110 (PD1-PD7 como salidas, PD0 reservado para buzzer)
 	OUT     DDRD, R16
+
+	RET
+
     LDI     R16, 0x00
     OUT     PORTB, R16
     OUT     PORTD, R16
