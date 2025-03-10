@@ -51,7 +51,7 @@ INICIO:
     OUT     PORTC, R16
 
     // Configurar PORTB y PORTD como salidas
-    LDI     R16, 0xFF
+    LDI     R16, 0xFF		// 0b00001111 (PB0-PB3 como salidas)
     OUT     DDRB, R16
     OUT     DDRD, R16
     LDI     R16, 0x00
