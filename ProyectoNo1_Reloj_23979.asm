@@ -42,6 +42,8 @@ INICIO:
     // Inicializar Timer0
     CALL    INICIALIZAR_TIMER
 
+	//CONFIGURACIÓN DE PUERTOS
+
     // Configurar PORTC como entrada con pull-up
     LDI     R16, 0x00
     OUT     DDRC, R16
