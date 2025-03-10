@@ -226,7 +226,7 @@ CONTINUAR:
 	OUT		SREG, R16
 	POP		R16
 	RETI
-
+/*
     INC     UNIDADES  // Incrementar unidades
     CPI     UNIDADES, 10
     BRNE    FIN_ISR  // Si no es 10, salir
@@ -234,6 +234,7 @@ CONTINUAR:
     CPI     CONTADOR_D, 6
     BRNE    FIN_ISR
     CLR     CONTADOR_D  // Reiniciar decenas
+	*/
 
 FIN_ISR:
     CALL    ACTUALIZAR_DISPLAY
