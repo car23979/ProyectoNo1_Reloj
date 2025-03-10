@@ -176,8 +176,6 @@ PCINT_ISR:
 // MODIFICACIONES NUEVAS
 
 CONFIGURAR_BOTONES:
-	//CONFIGURACIÓN DE PUERTOS
-
     // Configurar PORTC como entrada
     LDI     R16, 0x00
     OUT     DDRC, R16
@@ -274,7 +272,7 @@ INC_DIA:
 
 	// Comparar día maximo con lo maximo permitido
 	CP		DIA, R16
-
+	BRLT	CONTINUAR_INC
 
 
 
