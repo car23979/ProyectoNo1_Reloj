@@ -262,9 +262,10 @@ INC_DIA:
 	MOV		R26, MES
 	DEC		R26		// R26 va ser el indice de (0-11)
 	
-	// Cargar DIAS_MAX
+	// Cargar DIAS_MAX en Z
 	LDI		R30, LOW(DIAS_MAX)
-	LDI		R31, HIGH(DIAS_MAX) 
+	LDI		R31, HIGH(DIAS_MAX)
+	 
 
 
 
