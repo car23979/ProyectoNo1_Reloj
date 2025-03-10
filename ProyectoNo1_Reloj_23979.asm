@@ -203,6 +203,12 @@ TIMER0_ISR:
     BRNE    CONTINUAR
     CLR     DISPLAY_INDEX  // Reiniciar contador
 
+CONTINUAR:
+	// Apagar todos los displays
+	LDI		R16, 0x00
+	OUT		PORTB, R16
+
+
     INC     UNIDADES  // Incrementar unidades
     CPI     UNIDADES, 10
     BRNE    FIN_ISR  // Si no es 10, salir
