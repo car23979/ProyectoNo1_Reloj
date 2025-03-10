@@ -50,10 +50,12 @@ INICIO:
     LDI     R16, 0xFF
     OUT     PORTC, R16
 
-    // Configurar PORTB y PORTD como salidas
+    // Configurar PORTB como salida para selección de displays
     LDI     R16, 0xFF		// 0b00001111 (PB0-PB3 como salidas)
     OUT     DDRB, R16
-    OUT     DDRD, R16
+    
+	LDI		R16, 0xFE		// 0b11111110 (PD1-PD7 como salidas, PD0 reservado para buzzer)
+	OUT     DDRD, R16
     LDI     R16, 0x00
     OUT     PORTB, R16
     OUT     PORTD, R16
