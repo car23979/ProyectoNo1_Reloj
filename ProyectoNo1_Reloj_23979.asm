@@ -223,6 +223,10 @@ BOTON_ISR:
 	SBIC	R16, PC3
 	RJMP	CONFIRMAR
 
+	POP		R16
+	OUT		SREG, R16
+	POP		R16
+	RETI
 
 CONFIGURAR_PUERTOS:
     // Configurar PORTB como salida para selección de displays
