@@ -231,7 +231,13 @@ BOTON_ISR:
 	RETI
 
 CAMBIAR_MODO:
+	INC		MODE
+	CPI		MODE, 4		// Si el modo llega a 4, reiniciar a 0 	
+	BRNE	FIN_CAMBIAR
+	CLR		MODE
 
+FIN_CAMBIAR
+	RET
 
 CONFIGURAR_PUERTOS:
     // Configurar PORTB como salida para selección de displays
