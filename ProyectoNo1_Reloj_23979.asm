@@ -219,6 +219,11 @@ BOTON_ISR:
 	SBIC	R16, PC2
 	RJMP	DECREMENTAR_VALOR
 
+	// Botón4 (PC3) Confirmar
+	SBIC	R16, PC3
+	RJMP	CONFIRMAR
+
+
 CONFIGURAR_PUERTOS:
     // Configurar PORTB como salida para selección de displays
     LDI     R16, 0xFF		// 0b00001111 (PB0-PB3 como salidas)
