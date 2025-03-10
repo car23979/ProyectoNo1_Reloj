@@ -239,7 +239,7 @@ INCREMENTAR_VALOR:
 	CPI		MODE, 1		// Si estamos en modo Hora
 	BREQ	INC_HORA	
 	CPI		MODE, 2		// Si estamos en modo Fecha
-	BREQ	FIN_INC
+	BREQ	INC_DIA
 	RET
 
 INC_HORA:
@@ -255,7 +255,7 @@ DECREMENTAR_VALOR:
 	CPI		MODE, 1		// Si estamos en modo Hora
 	BREQ	DEC_HORA	
 	CPI		MODE, 2		// Si estamos en modo Fecha
-	BREQ	FIN_DEC
+	BREQ	DEC_DIA
 	RET
 
 DEC_HORA:
