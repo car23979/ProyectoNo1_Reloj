@@ -274,6 +274,8 @@ INC_DIA:
 	CP		DIA, R16
 	BRLT	CONTINUAR_INC
 
+	// Si DIA es igual al maximo se reinicia 1 y avanza Mes
+	LDI		DIA, 1
 
 
 DECREMENTAR_VALOR:
