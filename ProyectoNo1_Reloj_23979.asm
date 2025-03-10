@@ -196,6 +196,8 @@ CONFIGURAR_BOTONES:
 	LDI		R16, (1 << PCINT8) | (1 << PCINT9) | (1 << PCINT10) | (1 << PCINT11)
 	STS		PCMSK1, R16
 
+	RET
+
 CONFIGURAR_PUERTOS:
     // Configurar PORTB como salida para selección de displays
     LDI     R16, 0xFF		// 0b00001111 (PB0-PB3 como salidas)
