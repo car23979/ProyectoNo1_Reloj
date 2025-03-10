@@ -253,9 +253,18 @@ FIN_INC:
 
 DECREMENTAR_VALOR:
 	CPI		MODE, 1		// Si estamos en modo Hora
-	BREQ	INC_HORA	
+	BREQ	DEC_HORA	
 	CPI		MODE, 2		// Si estamos en modo Fecha
-	BREQ	FIN_INC
+	BREQ	FIN_DEC
+	RET
+
+DEC_HORA:
+	DEC		HORA
+	CPI		HORA, 23	// Si llega a 0, reiniciar 23
+	BRNE	FIN_DEC
+	CLR		HORA
+
+FIN_DEC:
 	RET
 
 CONFIGURAR_PUERTOS:
