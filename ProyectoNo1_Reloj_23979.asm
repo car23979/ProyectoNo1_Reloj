@@ -191,10 +191,12 @@ PCINT_ISR:
     CALL    DECREMENTAR_CONTADOR
     RETI
 
-TIMER_ISR:
+TIMER0_ISR:
     PUSH    R16
     IN      R16, SREG
     PUSH    R16
+
+	// Incrementar índice del display actual
 
     INC     R22  // Incrementar contador de interrupciones
     CPI     R22, 100  // Comparar con 100
