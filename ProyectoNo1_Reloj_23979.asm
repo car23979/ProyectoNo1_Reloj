@@ -222,6 +222,10 @@ CONTINUAR:
 	LD		R16, Z
 	OUT		PORTD, R16	// Enviar al display
 
+	POP		R16
+	OUT		SREG, R16
+	POP		R16
+	RETI
 
     INC     UNIDADES  // Incrementar unidades
     CPI     UNIDADES, 10
