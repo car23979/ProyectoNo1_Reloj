@@ -281,7 +281,12 @@ INC_DIA:
 	BRNE	FIN_INC_DIA
 	LDI		MES, 1		// Si Mes es 13, reiniciar en 1 (Enero)
 	
-	RJMP	FIN_INC_DIA 
+	RJMP	FIN_INC_DIA
+
+CONTINUAR_INC:
+	
+
+FIN_INC_DIA: 
 
 DECREMENTAR_VALOR:
 	CPI		MODE, 1		// Si estamos en modo Hora
