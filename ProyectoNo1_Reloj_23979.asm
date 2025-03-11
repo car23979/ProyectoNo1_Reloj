@@ -330,7 +330,6 @@ CONTINUAR_DEC2:
 	MOV		R26, MES
 	DEC		R26		// R26 va ser el indice de (0-11)
 	 
-	/*
 	// Cargar DIAS_MAX en Z
 	LDI		R30, LOW(DIAS_MAX)
 	LDI		R31, HIGH(DIAS_MAX)
@@ -340,7 +339,16 @@ CONTINUAR_DEC2:
 	
 	// Cargar el valor maximo de días
 	LD		R16, Z
+	MOV		DIA, R16	// Establecer día en el maximo del mes anterior
+	RJMP	FIN_DEC_DIA
 
+CONTINUAR_DEC:
+	DEC		DIA		// Decremento de días
+
+FIN_DEC_DIA:
+	
+
+	/*
 	// Comparar día maximo con lo maximo permitido
 	CP		DIA, R16
 	BRLT	CONTINUAR_INC
