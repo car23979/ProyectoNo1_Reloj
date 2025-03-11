@@ -287,7 +287,11 @@ CONTINUAR_INC:
 	INC		DIA		// Incremento de día
 
 FIN_INC_DIA:
-	POP
+	POP		R31
+	POP		R30
+	POP		R26
+	POP		R16
+	RET
 
 DECREMENTAR_VALOR:
 	CPI		MODE, 1		// Si estamos en modo Hora
