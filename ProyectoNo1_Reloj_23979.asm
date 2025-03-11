@@ -324,6 +324,12 @@ DEC_DIA:
 	CPI		MES, 0
 	BRNE	CONTINUAR_DEC2
 	LDI		MES, 12		// Si el mes era 1, va cambiar a diciembre (12)
+
+CONTINUAR_DEC2:
+	// Cambiar indice (1-12) a (0-11)
+	MOV		R26, MES
+	DEC		R26		// R26 va ser el indice de (0-11)
+	 
 	/*
 	// Cargar DIAS_MAX en Z
 	LDI		R30, LOW(DIAS_MAX)
