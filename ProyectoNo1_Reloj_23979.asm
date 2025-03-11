@@ -314,11 +314,14 @@ DEC_DIA:
 	PUSH	R26
 	PUSH	R30
 	PUSH	R31
-	/*
-	// Cambiar indice (1-12) a (0-11)
-	MOV		R26, MES
-	DEC		R26		// R26 va ser el indice de (0-11)
 	
+	// Verificar si el día es mayor a 1
+	CPI		DIA, 1
+	BRNE	CONTINUAR_DEC
+
+	// Si el día es 1 retroceder al mes anterior
+
+	/*
 	// Cargar DIAS_MAX en Z
 	LDI		R30, LOW(DIAS_MAX)
 	LDI		R31, HIGH(DIAS_MAX)
