@@ -314,7 +314,44 @@ DEC_DIA:
 	PUSH	R26
 	PUSH	R30
 	PUSH	R31
+	/*
+	// Cambiar indice (1-12) a (0-11)
+	MOV		R26, MES
+	DEC		R26		// R26 va ser el indice de (0-11)
 	
+	// Cargar DIAS_MAX en Z
+	LDI		R30, LOW(DIAS_MAX)
+	LDI		R31, HIGH(DIAS_MAX)
+	
+	// Sumar al indice para acceder al valor correcto
+	ADD		R30, R26	// R30 apunta a DIAS_MAX
+	
+	// Cargar el valor maximo de días
+	LD		R16, Z
+
+	// Comparar día maximo con lo maximo permitido
+	CP		DIA, R16
+	BRLT	CONTINUAR_INC
+
+	// Si DIA es igual al maximo se reinicia 1 y avanza Mes
+	LDI		DIA, 1
+	INC		MES
+	CPI		MES, 13
+	BRNE	FIN_INC_DIA
+	LDI		MES, 1		// Si Mes es 13, reiniciar en 1 (Enero)
+	
+	RJMP	FIN_INC_DIA
+
+CONTINUAR_INC:
+	INC		DIA		// Incremento de día
+
+FIN_INC_DIA:
+	POP		R31
+	POP		R30
+	POP		R26
+	POP		R16
+	RET
+	*/
 
 CONFIGURAR_PUERTOS:
     // Configurar PORTB como salida para selección de displays
