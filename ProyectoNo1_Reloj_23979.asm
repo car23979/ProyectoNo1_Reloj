@@ -284,9 +284,10 @@ INC_DIA:
 	RJMP	FIN_INC_DIA
 
 CONTINUAR_INC:
-	
+	INC		DIA		// Incremento de día
 
-FIN_INC_DIA: 
+FIN_INC_DIA:
+	POP
 
 DECREMENTAR_VALOR:
 	CPI		MODE, 1		// Si estamos en modo Hora
