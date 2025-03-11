@@ -320,7 +320,10 @@ DEC_DIA:
 	BRNE	CONTINUAR_DEC
 
 	// Si el día es 1 retroceder al mes anterior
-
+	DEC		MES
+	CPI		MES, 0
+	BRNE	CONTINUAR_DEC2
+	LDI		MES, 12		// Si el mes era 1, va cambiar a diciembre (12)
 	/*
 	// Cargar DIAS_MAX en Z
 	LDI		R30, LOW(DIAS_MAX)
