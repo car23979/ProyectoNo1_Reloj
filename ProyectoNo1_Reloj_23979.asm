@@ -392,6 +392,10 @@ TIMER0_ISR:
     CLR     DISPLAY_INDEX  // Reiniciar contador
 
 TIMER1_ISR:
+	PUSH	R16
+	IN		R16, SREG
+	PUSH	R16
+
 	
 
 CONTINUAR:
