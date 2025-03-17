@@ -13,11 +13,14 @@
 .equ	MODES = 4			// Cantidad de modos (Hora, Fecha, Alarma, Normal)
 
 // Definición de registros
-.def	MODE = R20
-.def    DISPLAY = R21
-.def    DECENAS = R23
-.def    UNIDADES = R24
-.def    CONTADOR_D = R25
+.def	MODE = R20			// Modo de operación
+.def	COUNTER = R21		// Contador auxiliar para parpadeo
+.def	ACTION	= R22		// Registro para manejar acciones de botones
+.def	HORA	= R16		// Contador de horas
+.def    MINUTO	= R17		// Contador de minutos
+.def    SEGUNDO	= R18		// Contador de segundos
+.def    BLINK_COUNTER = R19	// Contador para parpadeo de los dos puntos
+.def	TEMP	= R23		// Registro temporal para cálculos intermedios
 
 .ORG    0x0000
     RJMP    INICIO  // Vector Reset
