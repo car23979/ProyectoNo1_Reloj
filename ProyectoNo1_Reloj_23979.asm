@@ -5,7 +5,7 @@
  Author : David Carranza
 
  Descripción: 
- */
+ *
 .include "M328PDEF.inc"
 
 // Constantes
@@ -396,7 +396,8 @@ TIMER1_ISR:
 	IN		R16, SREG
 	PUSH	R16
 
-	
+	// Incrementar el contador de segudos
+
 
 CONTINUAR:
 	// Apagar todos los displays
