@@ -8,11 +8,16 @@
  */
 .include "M328PDEF.inc"
 
+// Constantes
+.equ	T1VALUE = 0XC2F7	// Valor precargado para TIMER1 (1s)
+.equ	MODES = 4			// Cantidad de modos (Hora, Fecha, Alarma, Normal)
+
 // Definición de registros
-.DEF    DISPLAY = R21
-.DEF    DECENAS = R23
-.DEF    UNIDADES = R24
-.DEF    CONTADOR_D = R25
+.def	MODE = R20
+.def    DISPLAY = R21
+.def    DECENAS = R23
+.def    UNIDADES = R24
+.def    CONTADOR_D = R25
 
 .ORG    0x0000
     RJMP    INICIO  // Vector Reset
