@@ -391,6 +391,9 @@ TIMER0_ISR:
     BRNE    CONTINUAR
     CLR     DISPLAY_INDEX  // Reiniciar contador
 
+TIMER1_ISR:
+	
+
 CONTINUAR:
 	// Apagar todos los displays
 	LDI		R16, 0x00
