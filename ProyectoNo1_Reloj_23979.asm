@@ -21,6 +21,10 @@
 .def    SEGUNDO	= R18		// Contador de segundos
 .def    BLINK_COUNTER = R19	// Contador para parpadeo de los dos puntos
 .def	TEMP	= R23		// Registro temporal para cálculos intermedios
+// Definición Alarma
+.def	HORA_ALARMA	= R26	// Configura hora para alarma
+.def	MIN_ALARMA	= R27	// Configura minutos para alarma
+.def	BUZZER_FLAG	= R28	// Indica si el buzzer está activo
 
 .ORG    0x0000
     RJMP    INICIO  // Vector Reset
