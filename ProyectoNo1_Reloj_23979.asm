@@ -271,6 +271,15 @@ VERIFICAR_FECHA:
 	MOV		MES, TEMP_MES
 	RJMP	FIN_CONFIRMAR
 
+VERIFICAR_ALARMA:
+	CPI		MODE, 3
+	BRNE	FIN_CONFIRMAR
+
+	// Si estamos en modo de configuración de alarma (mode=3)
+	MOV		HORA_ALARMA, TEMP_HORA_ALARMA
+	MOV		MIN_ALARMA, TEMP_MIN_ALARMA
+
+
 CAMBIAR_MODO:
 	INC		MODE
 	CPI		MODE, 4		// Si el modo llega a 4, reiniciar a 0 	
