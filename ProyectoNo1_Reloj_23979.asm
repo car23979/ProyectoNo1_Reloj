@@ -248,6 +248,21 @@ FIN_BOTON_ISR:
 	POP		R16
 	RETI
 
+CONFIRMAR:
+	PUSH	R16
+	IN		R16, SREG
+	PUSH	R16
+
+	// Verificar modo de reloj
+	CPI		MODE, 1
+	BRNE	VERIFICAR_FECHA
+
+	// Si estamos en modo configuración de hora (mode=1)
+	MOV		HORA, TEMP_HORA
+	MOV		MINUTO, TEMP_MINUTO
+	RJMP	FIN_CONFIRMAR
+
+
 CAMBIAR_MODO:
 	INC		MODE
 	CPI		MODE, 4		// Si el modo llega a 4, reiniciar a 0 	
