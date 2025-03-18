@@ -301,6 +301,8 @@ INCREMENTAR_VALOR:
 	BREQ	INC_HORA	
 	CPI		MODE, 2		// Si estamos en modo Fecha
 	BREQ	INC_DIA
+	CPI		MODE, 3		// Si estamos en modo Alarma
+	BREQ	INC_HORA_ALARMA
 	RET
 
 INC_HORA:
@@ -355,6 +357,12 @@ FIN_INC_DIA:
 	POP		R26
 	POP		R16
 	RET
+
+INC_HORA_ALARMA:
+	LDS		R16, TEMP_HORA_ALARMA_ADDR
+	INC		R16
+	CPI		R16, 24		// Si llega
+
 
 DECREMENTAR_VALOR:
 	CPI		MODE, 1		// Si estamos en modo Hora
