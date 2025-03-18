@@ -450,7 +450,28 @@ CONTINUAR:
 	LDI		ZH, HIGH(TABLA_DISPLAY << 1)
 
 	// Determinar que número mostrar en el display actual
-	CPI
+	CPI		DISPLAY_INDEX, 0
+	BRNE	CHECAR_2
+	MOV		R18, HORA		// Primer digito
+	RJMP	CARGAR_NUMERO
+
+CHECAR_2:
+	CPI		DISPLAY_INDEX, 1
+	BRNE	CHECAR_3
+	MOV		R18, HORA		// Segundo digito
+	RJMP	CARGAR_NUMERO
+
+CHECAR_3:
+	CPI		DISPLAY_INDEX, 2
+	BRNE	CHECAR_4
+	MOV		R18, MINUTO		// Tercer digito
+	RJMP	CARGAR_NUMERO
+
+CHECAR_4:
+	MOV		R18, MINUTO		// Cuarto digito
+
+CARGAR_NUMERO:
+	ANDI
 	LD		R16, Z
 	OUT		PORTD, R16	// Enviar al display
 
