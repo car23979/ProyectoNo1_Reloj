@@ -382,13 +382,15 @@ CONFIGURAR_PUERTOS:
     OUT     DDRB, R16
     
 	// Configurar PORD como salida para segmentos de displays
-	LDI		R16, 0xFE		// 0b11111110 (PD1-PD7 como salidas, PD0 reservado para buzzer)
+	LDI		R16, 0xFF		// 0b1111111 (PD0-PD6 como salidas, PD7 reservado para buzzer)
 	OUT     DDRD, R16
 
 	RET
 
 TIMER0_ISR:
     PUSH    R16
+	PUSH	R17
+	PUSH	R18
     IN      R16, SREG
     PUSH    R16
 
@@ -446,6 +448,9 @@ CONTINUAR:
 	// Obtener número correspondiente 
 	LDI		ZL, LOW(TABLA_DISPLAY << 1)
 	LDI		ZH, HIGH(TABLA_DISPLAY << 1)
+
+	// Determinar que número mostrar en el display actual
+	CPI
 	LD		R16, Z
 	OUT		PORTD, R16	// Enviar al display
 
