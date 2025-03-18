@@ -219,6 +219,8 @@ BOTON_ISR:
 	// Leer estados de los botones en PORTC
 	IN		R16, PINC
 
+
+CONTINUAR_BOTONES:
 	// Botón1 (PC0) cambio de modo
 	SBIC	R16, PC0
 	RJMP	CAMBIAR_MODO
@@ -235,6 +237,12 @@ BOTON_ISR:
 	SBIC	R16, PC3
 	RJMP	CONFIRMAR
 
+APAGAR_BUZZER:
+	CBI		PORTD, 7		// Apagar buzzer en PD7
+	CLR		BUZZER_FLAG		// Indicar que el buzzer ya no esta sonando
+	RJMP	FIN_BOTON_ISR
+
+FIN_BOTON_ISR:
 	POP		R16
 	OUT		SREG, R16
 	POP		R16
