@@ -471,8 +471,13 @@ CHECAR_4:
 	MOV		R18, MINUTO		// Cuarto digito
 
 CARGAR_NUMERO:
-	ANDI
-	LD		R16, Z
+	ANDI	R18, 0x0F		// Asegurar que se un digito de 0-9
+	ADD		ZL, R18			// Apuntar al número de la tabla
+	LPM		R16, Z			// Cargar patrón de 7 segmentos en R16
+
+	// PD7 no se ve afectado
+	LDI		R17, 0x7F
+	AND		R16, R17	// Apagar sin afectar los segmentos
 	OUT		PORTD, R16	// Enviar al display
 
 	POP		R16
