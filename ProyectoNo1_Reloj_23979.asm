@@ -375,6 +375,8 @@ DECREMENTAR_VALOR:
 	BREQ	DEC_HORA	
 	CPI		MODE, 2		// Si estamos en modo Fecha
 	BREQ	DEC_DIA
+	CPI		MODE, 3		// Si estamos en modo Alarma
+	BREQ	DEC_HORA_ALARMA
 	RET
 
 DEC_HORA:
@@ -428,6 +430,21 @@ FIN_DEC_DIA:
 	POP		R26
 	POP		R16
 	RET
+
+DEC_HORA_ALARMA:
+	LDS		R16, TEMP_HORA_ALARMA_ADDR
+	CPI		R16, 0
+	BRNE	NORMAL_DEC_ALARMA
+	LDI		R16, 23		// Si está en 0, reiniciar a 23
+	RJMP	FIN_DEC_ALARMA
+
+NORMAL_DEC_ALARMA:
+	DEC		R16
+
+FIN_DEC_ALARMA:
+	STS		TEMP_HORA_ALARMA_ADDR
+	RET
+
 
 CONFIGURAR_PUERTOS:
     // Configurar PORTB como salida para selección de displays
