@@ -9,8 +9,10 @@
 .include "M328PDEF.inc"
 
 // Constantes
-.equ	T1VALUE = 0XC2F7	// Valor precargado para TIMER1 (1s)
-.equ	MODES = 4			// Cantidad de modos (Hora, Fecha, Alarma, Normal)
+.equ	T1VALUE = 0XC2F7				// Valor precargado para TIMER1 (1s)
+.equ	MODES = 4						// Cantidad de modos (Hora, Fecha, Alarma, Normal)
+.equ	TEMP_HORA_ALARMA_ADDR = 0x0104	// Dirección en SRAM para la hora de la alarma
+.equ	TEMP_MIN_ALARMA_ADDR = 0x0105	// Dirección en SRAM para los minutos de la alarma
 
 // Definición de registros
 .def	MODE = R20			// Modo de operación
