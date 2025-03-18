@@ -397,6 +397,30 @@ TIMER1_ISR:
 	PUSH	R16
 
 	// Incrementar el contador de segudos
+	INC		SEGUNDO
+	CPI		SEGUNDO, 60
+	BRNE	FIN_ISR
+
+	CLR		SEGUNDO
+	INC		MINUTO
+	CPI		MINUTO,	60
+	BRNE	FIN_ISR
+
+	CLR		MINUTO
+	INC		HORA
+	CPI		HORA, 24
+	BRNE	FIN_ISR
+	CLR		HORA
+
+	// Comparar hora actual con la alarma
+	CP		HORA, HORA_ALARMA
+	BRNE	FIN_ISR
+	CP		MINUTO, MIN_ALARMA
+	BRNE	FIN_ISR
+
+	// Si hora = hora_alarma y minuto = min_alarma activar buzzer
+	SBI		PORTD, 7		// Activar buzzer en PD7
+	LDI		BUZZER_FLAG, 1	// Indicar que el buzzer esta sonando
 
 
 CONTINUAR:
