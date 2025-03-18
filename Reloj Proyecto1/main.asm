@@ -242,6 +242,8 @@ CONTINUAR_BOTONES:
 	SBIC	R16, PC3
 	RJMP	CONFIRMAR
 
+	RJMP	FIN_BOTON_ISR
+
 APAGAR_BUZZER:
 	CBI		PORTD, 7		// Apagar buzzer en PD7
 	CLR		BUZZER_FLAG		// Indicar que el buzzer ya no esta sonando
