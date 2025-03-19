@@ -299,8 +299,19 @@ FIN_CONFIRMAR:
 CAMBIAR_MODO:
 	INC		MODE
 	CPI		MODE, 4		// Si el modo llega a 4, reiniciar a 0 	
-	BRNE	FIN_CAMBIAR
+	BRNE	CONTINUAR_MODO
 	CLR		MODE
+
+CONTINUAR_MODO:
+	// Apagar todos los Leds de modo antes de encender el correcto
+	CBI		PORTC, 4	// Apagar LED de modo hora (A4)
+	CBI		PORTC, 5	// Apagar LED de modo fecha (A5)
+
+	// Encender los LEDs según el modo actual
+	CPI		MODE, 1
+	BRNE	MODO_FECHA
+	SBI		PORTC, 4	// Encender LED de modo hora
+	RJMP	FIN_CAMBIAR
 
 FIN_CAMBIAR:
 	RET
