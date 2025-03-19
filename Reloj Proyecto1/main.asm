@@ -313,6 +313,18 @@ CONTINUAR_MODO:
 	SBI		PORTC, 4	// Encender LED de modo hora
 	RJMP	FIN_CAMBIAR
 
+MODO_FECHA:
+	CPI		MODE, 2
+	BRNE	MODO_ALARMA
+	SBI		PORTC, 5	// Encender LED modo fecha
+	RJMP	FIN_CAMBIAR
+
+MODO_ALARMA:
+	CPI		MODE, 3
+	BRNE	FIN_CAMBIAR
+	SBI		PORTC, 4	// Encender ambos LEDs para Modo Alarma
+	SBI		PORTC, 5
+
 FIN_CAMBIAR:
 	RET
 
