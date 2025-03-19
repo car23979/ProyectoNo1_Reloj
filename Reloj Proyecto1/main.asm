@@ -9,8 +9,10 @@
 .include "M328PDEF.inc"
 
 // Constantes
-.equ	T1VALUE = 0XC2F7	// Valor precargado para TIMER1 (1s)
-.equ	MODES = 4			// Cantidad de modos (Hora, Fecha, Alarma, Normal)
+.equ	T1VALUE = 0XC2F7				// Valor precargado para TIMER1 (1s)
+.equ	MODES = 4						// Cantidad de modos (Hora, Fecha, Alarma, Normal)
+.equ	TEMP_HORA_ALARMA_ADDR = 0x0104	// Dirección en SRAM para la hora de la alarma
+.equ	TEMP_MIN_ALARMA_ADDR = 0x0105	// Dirección en SRAM para los minutos de la alarma
 
 // Definición de registros
 .def	MODE = R20			// Modo de operación
@@ -219,11 +221,6 @@ BOTON_ISR:
 	// Leer estados de los botones en PORTC
 	IN		R16, PINC
 
-	// Si el buzzer esta activo, el boton 4 lo apaga
-	TST		BUZZER_FLAG			// Verifica si el buzzer está encendido
-	BREQ	CONTINUAR_BOTONES	// Continuar normal si buzzer ser 0
-	SBIC	R16, PC3			// Si el botón 4 está presionando
-	RJMP	APAGAR_BUZZER
 
 CONTINUAR_BOTONES:
 	// Botón1 (PC0) cambio de modo
@@ -242,8 +239,6 @@ CONTINUAR_BOTONES:
 	SBIC	R16, PC3
 	RJMP	CONFIRMAR
 
-	RJMP	FIN_BOTON_ISR
-
 APAGAR_BUZZER:
 	CBI		PORTD, 7		// Apagar buzzer en PD7
 	CLR		BUZZER_FLAG		// Indicar que el buzzer ya no esta sonando
@@ -254,6 +249,47 @@ FIN_BOTON_ISR:
 	OUT		SREG, R16
 	POP		R16
 	RETI
+
+CONFIRMAR:
+	PUSH	R16
+	IN		R16, SREG
+	PUSH	R16
+
+	// Verificar modo de reloj
+	CPI		MODE, 1
+	BRNE	VERIFICAR_FECHA
+
+	// Si estamos en modo configuración de hora (mode=1)
+	MOV		HORA, TEMP_HORA
+	MOV		MINUTO, TEMP_MINUTO
+	RJMP	FIN_CONFIRMAR
+
+
+
+VERIFICAR_FECHA:
+	CPI		MODE, 2
+	BRNE	VERIFICAR_ALARMA
+
+	// Si estamos en modo de configuración de fecha (mode=2)
+	MOV		DIA, TEMP_DIA
+	MOV		MES, TEMP_MES
+	RJMP	FIN_CONFIRMAR
+
+VERIFICAR_ALARMA:
+	CPI		MODE, 3
+	BRNE	FIN_CONFIRMAR
+
+	// Si estamos en modo de configuración de alarma (mode=3)
+	LDS		R16, TEMP_HORA_ALARMA_ADDR
+	MOV		HORA_ALARMA, R16
+	LDS		R16, TEMP_MIN_ALARMA_ADDR
+	MOV		MIN_ALARMA, R16
+
+FIN_CONFIRMAR:
+	POP		R16
+	OUT		SREG, R16
+	POP		R16
+	RET
 
 CAMBIAR_MODO:
 	INC		MODE
@@ -269,6 +305,8 @@ INCREMENTAR_VALOR:
 	BREQ	INC_HORA	
 	CPI		MODE, 2		// Si estamos en modo Fecha
 	BREQ	INC_DIA
+	CPI		MODE, 3		// Si estamos en modo Alarma
+	BREQ	INC_HORA_ALARMA
 	RET
 
 INC_HORA:
@@ -324,11 +362,25 @@ FIN_INC_DIA:
 	POP		R16
 	RET
 
+INC_HORA_ALARMA:
+	LDS		R16, TEMP_HORA_ALARMA_ADDR
+	INC		R16
+	CPI		R16, 24		// Si llega a 24, reiniciar 0
+	BRNE	FIN_INC_ALARMA
+	CLR		R16
+
+FIN_INC_ALARMA:
+	STS		TEMP_HORA_ALARMA_ADDR, R16
+	RET
+
+
 DECREMENTAR_VALOR:
 	CPI		MODE, 1		// Si estamos en modo Hora
 	BREQ	DEC_HORA	
 	CPI		MODE, 2		// Si estamos en modo Fecha
 	BREQ	DEC_DIA
+	CPI		MODE, 3		// Si estamos en modo Alarma
+	BREQ	DEC_HORA_ALARMA
 	RET
 
 DEC_HORA:
@@ -382,6 +434,21 @@ FIN_DEC_DIA:
 	POP		R26
 	POP		R16
 	RET
+
+DEC_HORA_ALARMA:
+	LDS		R16, TEMP_HORA_ALARMA_ADDR
+	CPI		R16, 0
+	BRNE	NORMAL_DEC_ALARMA
+	LDI		R16, 23		// Si está en 0, reiniciar a 23
+	RJMP	FIN_DEC_ALARMA
+
+NORMAL_DEC_ALARMA:
+	DEC		R16
+
+FIN_DEC_ALARMA:
+	STS		TEMP_HORA_ALARMA_ADDR
+	RET
+
 
 CONFIGURAR_PUERTOS:
     // Configurar PORTB como salida para selección de displays
