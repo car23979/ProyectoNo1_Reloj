@@ -221,6 +221,11 @@ BOTON_ISR:
 	// Leer estados de los botones en PORTC
 	IN		R16, PINC
 
+	// Si el buzzer está activo, el boton 4 lo apaga
+	TST		BUZZER_FLAG			// Verificar si la alarma está encendida
+	BREQ	CONTINUAR_BOTONES	// Si buzzer_flag=0, continuar con botones
+	SBIC	R16, PC3			// Si el boton 4 esta presionado
+	RJMP	APAGAR_BUZZER		// Ir a la subrutina de apagado
 
 CONTINUAR_BOTONES:
 	// Botón1 (PC0) cambio de modo
