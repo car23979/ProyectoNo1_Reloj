@@ -485,6 +485,15 @@ TIMER1_ISR:
 	IN		R16, SREG
 	PUSH	R16
 
+	INC		BLINK_COUNTER
+	CPI		BLINK_COUNTER, 50		// 50 * 10 ms = 500 ms
+	BRNE	CONTINUAR_ISR
+	CLR		BLINK_COUNTER			// Reiniciar contador
+	IN		R16, PORTB
+	EOR		R16, (1 << PB4)			// Alternar LED de los dos puntos
+	OUT		PORTB, R16
+
+CONTINUAR_ISR:
 	// Incrementar el contador de segudos
 	INC		SEGUNDO
 	CPI		SEGUNDO, 60
