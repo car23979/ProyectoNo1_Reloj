@@ -19,7 +19,7 @@
 // Definición de registros
 .def	MODE = R20			// Modo de operación
 .def	COUNTER = R21		// Contador auxiliar para parpadeo
-.def	ACTION	= R22		// Registro para manejar acciones de botones
+.def	DISPLAY_INDEX = R22	// Indice para multiplexación
 .def	HORA	= R16		// Contador de horas
 .def    MINUTO	= R17		// Contador de minutos
 .def    SEGUNDO	= R18		// Contador de segundos
@@ -33,6 +33,7 @@
 .def	MIN_ALARMA	= R27	// Configura minutos para alarma
 .def	BUZZER_FLAG	= R28	// Indica si el buzzer está activo
 
+.cseg
 
 .ORG    0x0000
     RJMP    INICIO  // Vector Reset
@@ -42,7 +43,7 @@
 .ORG    0x0020
     RJMP    TIMER_ISR
 
-.cseg
+
 //.def CONTADOR = R19  // Variable para el contador
 
 // Configuración del Stack
@@ -50,15 +51,16 @@
     OUT     SPL, R16
     LDI     R16, HIGH(RAMEND)
     OUT     SPH, R16
-/*
+
 // Inicio del programa
 INICIO:
+
     // Configurar Prescaler
     LDI     R16, (1 << CLKPCE)
     STS     CLKPR, R16  // Habilitar cambio de PRESCALER
     LDI     R16, 0b00000100
     STS     CLKPR, R16  // Prescaler a 16 (F_cpu = 1MHz)
-
+/*
     // Inicializar Timer0
     CALL    INICIALIZAR_TIMER
 
