@@ -60,19 +60,29 @@ INICIO:
 	SEI		// Habilita interrupciones globales
 	RJMP	MAIN
 
+CONFIGURAR_PILA:
 // Configuración del Stack
     LDI     R16, LOW(RAMEND)
     OUT     SPL, R16
     LDI     R16, HIGH(RAMEND)
     OUT     SPH, R16
+	RET
 
-
-
+CONFIGURAR_RELOJ:
     // Configurar Prescaler
     LDI     R16, (1 << CLKPCE)
     STS     CLKPR, R16  // Habilitar cambio de PRESCALER
     LDI     R16, 0b00000100
     STS     CLKPR, R16  // Prescaler a 16 (F_cpu = 1MHz)
+	RET
+
+CONFIGURAR_TIMERS:
+    LDI     R16, (1 << CS01) | (1 << CS00)
+    OUT     TCCR0B, R16  // Prescaler a 64
+    
+	LDI     R16, (1 << CS12) | (1 << CS10)
+    OUT     TCNT0, R16  // Prescaler a 1024
+    RET
 /*
     // Inicializar Timer0
     CALL    INICIALIZAR_TIMER
@@ -124,87 +134,9 @@ DECREMENTAR_NORMAL:
     OUT     PORTB, CONTADOR // Actualizar el puerto B con el nuevo valor
     RET
 
-INICIALIZAR_TIMER:
-    LDI     R16, (1 << CS01) | (1 << CS00)
-    OUT     TCCR0B, R16  // Prescaler a 64
-    LDI     R16, 100
-    OUT     TCNT0, R16  // Valor inicial
-    RET
 
-ACTUALIZAR_DISPLAY:
-    // Mostrar unidades
-    SBI     PORTB, 1  // Encender bit 4
-    CBI     PORTB, 2  // Apagar bit 5
-    LDI     ZH, HIGH(TABLA << 1)
-    LDI     ZL, LOW(TABLA << 1)
-    ADD     ZL, UNIDADES
-    LPM     R23, Z
-    OUT     PORTD, R23
-    CALL    RETARDO
 
-    // Mostrar decenas
-    CBI     PORTB, 1  // Apagar bit 4
-    SBI     PORTB, 2  // Encender bit 5
-    LDI     ZH, HIGH(TABLA << 1)
-    LDI     ZL, LOW(TABLA << 1)
-    ADD     ZL, CONTADOR_D
-    LPM     R23, Z
-    OUT     PORTD, R23
-    CALL    RETARDO
 
-	// Mostrar unidades
-    SBI     PORTB, 3  // Encender bit 4
-    CBI     PORTB, 4  // Apagar bit 5
-    LDI     ZH, HIGH(TABLA << 1)
-    LDI     ZL, LOW(TABLA << 1)
-    ADD     ZL, UNIDADES
-    LPM     R23, Z
-    OUT     PORTD, R23
-    CALL    RETARDO
-
-    // Mostrar decenas
-    CBI     PORTB, 3  // Apagar bit 4
-    SBI     PORTB, 4  // Encender bit 5
-    LDI     ZH, HIGH(TABLA << 1)
-    LDI     ZL, LOW(TABLA << 1)
-    ADD     ZL, CONTADOR_D
-    LPM     R23, Z
-    OUT     PORTD, R23
-    CALL    RETARDO
-
-    RET
-
-ACTUALIZAR_DECENAS:
-    CLR     UNIDADES
-    INC     CONTADOR_D
-    RET
-
-RETARDO:
-    LDI     R18, 0xFF
-RETARDO_1:
-    DEC     R18
-    CPI     R18, 0
-    BRNE    RETARDO_1
-    LDI     R18, 0xFF
-RETARDO_2:
-    DEC     R18
-    CPI     R18, 0
-    BRNE    RETARDO_2
-    LDI     R18, 0xFF
-RETARDO_3:
-    DEC     R18
-    CPI     R18, 0
-    BRNE    RETARDO_3
-    RET
-
-// RUTINAS DE INTERRUPCIÓN
-PCINT_ISR:
-    IN      R18, PINC  // Leer estado de los pines
-    SBRS    R18, 0  // Si PC0 está alto, incrementar
-    CALL    INCREMENTAR_CONTADOR
-    SBRS    R18, 1  // Si PC1 está alto, decrementar
-    CALL    DECREMENTAR_CONTADOR
-    RETI
 
 */
 
