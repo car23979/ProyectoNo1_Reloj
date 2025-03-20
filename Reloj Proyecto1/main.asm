@@ -38,10 +38,14 @@
 .ORG    0x0000
     RJMP    INICIO  // Vector Reset
 
-.ORG    PCI1addr
-    RJMP    PCINT_ISR  // Vector de interrupción PCINT1
 .ORG    0x0020
-    RJMP    TIMER_ISR
+    RJMP    TIMER1_ISR  // Vector de interrupción PCINT1
+
+.ORG    0x0030
+    RJMP    TIMER0_ISR
+
+.ORG	PCI1addr
+	RJMP	BOTON_ISR
 
 
 //.def CONTADOR = R19  // Variable para el contador
