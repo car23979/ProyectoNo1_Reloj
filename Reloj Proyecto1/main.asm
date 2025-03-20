@@ -102,61 +102,6 @@ CONFIGURAR_PUERTOS:
 
 MAIN:
     RJMP    MAIN
-/*
-    // Inicializar Timer0
-    CALL    INICIALIZAR_TIMER
-
-
-
-    LDI     R16, 0x00
-    OUT     PORTB, R16
-    OUT     PORTD, R16
-
-    // Deshabilitar serial (apaga LEDs adicionales)
-    LDI     R16, 0x00
-    STS     UCSR0B, R16
-
-    // Iniciar el display en 0s
-    LDI     DISPLAY, 0x00
-    CALL    ACTUALIZAR_DISPLAY
-    LDI     CONTADOR_D, 0x00
-
-    // Configurar interrupciones
-    LDI     R16, (1 << PCIE1)  // Habilitar PCIE1
-    STS     PCICR, R16
-    LDI     R16, (1 << PCINT8) | (1 << PCINT9)  // Habilitar PC0 y PC1
-    STS     PCMSK1, R16
-
-    LDI     R16, (1 << TOIE0)  // Habilitar interrupción Timer0
-    STS     TIMSK0, R16
-
-    SEI  // Habilitar interrupciones globales
-
-    LDI     R17, 0x00  // Inicializar contador
-
-
-
-// SUBRUTINAS
-
-
-NO_RESET:
-    OUT     PORTB, CONTADOR
-    RET
-
-DECREMENTAR_CONTADOR:
-    CPI     CONTADOR, 0x00  // Verificar si el contador es 0
-    BRNE    DECREMENTAR_NORMAL  // Si no es 0, decrementar normalmente
-    LDI     CONTADOR, 0x10  // Si es 0, establecer el contador en 16 (0x10)
-DECREMENTAR_NORMAL:
-    DEC     CONTADOR        // Decrementar el contador
-    OUT     PORTB, CONTADOR // Actualizar el puerto B con el nuevo valor
-    RET
-
-
-
-
-
-*/
 
 // MODIFICACIONES NUEVAS
 
@@ -453,7 +398,10 @@ TIMER0_ISR:
 	PUSH	R18
     IN      R16, SREG
     PUSH    R16
-
+	
+	// Apagar todos los displays
+	LDI		R16, 0x00
+	OUT		PORTB, R16
 	// Incrementar índice del display actual
 
     INC     DISPLAY_INDEX  // Incrementar contador de interrupciones
@@ -503,10 +451,6 @@ CONTINUAR_ISR:
 
 
 CONTINUAR:
-	// Apagar todos los displays
-	LDI		R16, 0x00
-	OUT		PORTB, R16
-
 	// Selección de displays correspondientes
 	LDI		ZL, LOW(DIGITO_DISPLAY << 1)
 	LDI		ZH, HIGH(DIGITO_DISPLAY << 1)
