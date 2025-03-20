@@ -9,10 +9,12 @@
 .include "M328PDEF.inc"
 
 // Constantes
-.equ	T1VALUE = 0XC2F7				// Valor precargado para TIMER1 (1s)
-.equ	MODES = 4						// Cantidad de modos (Hora, Fecha, Alarma, Normal)
-.equ	TEMP_HORA_ALARMA_ADDR = 0x0104	// Dirección en SRAM para la hora de la alarma
-.equ	TEMP_MIN_ALARMA_ADDR = 0x0105	// Dirección en SRAM para los minutos de la alarma
+.equ	TEMP_HORA_ALARMA_ADDR	= 0x0104	// Dirección en SRAM para la hora de la alarma
+.equ	TEMP_MIN_ALARMA_ADDR	= 0x0105	// Dirección en SRAM para los minutos de la alarma
+.equ	TEMP_HORA_ADDR			= 0x0106
+.equ	TEMP_MINUTO_ADDR		= 0x0107
+.equ	TEMP_DIA_ADDR			= 0x0108
+.equ	TEMP_MES_ADDR			= 0x0109 
 
 // Definición de registros
 .def	MODE = R20			// Modo de operación
@@ -41,7 +43,7 @@
     RJMP    TIMER_ISR
 
 .cseg
-.def CONTADOR = R19  // Variable para el contador
+//.def CONTADOR = R19  // Variable para el contador
 
 // Configuración del Stack
     LDI     R16, LOW(RAMEND)
