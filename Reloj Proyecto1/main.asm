@@ -83,6 +83,22 @@ CONFIGURAR_TIMERS:
 	LDI     R16, (1 << CS12) | (1 << CS10)
     OUT     TCNT0, R16  // Prescaler a 1024
     RET
+
+CONFIGURAR_PUERTOS:
+    // Configurar PORTB como salida para selección de displays
+    LDI     R16, 0xFF		// 0b00001111 (PB0-PB3 como salidas)
+    OUT     DDRB, R16
+    
+	// Configurar PORD como salida para segmentos de displays
+	LDI		R16, 0xFF		// 0b1111111 (PD0-PD6 como salidas, PD7 reservado para buzzer)
+	OUT     DDRD, R16
+
+	LDI		R16, 0x20
+	OUT		DDRC, R16		// PC4 y PC5 LEDs modo
+
+	LDI		R16, 0x1F
+	OUT		PORTC, R16		// Activar Pull-ups en botones
+	RET
 /*
     // Inicializar Timer0
     CALL    INICIALIZAR_TIMER
@@ -427,16 +443,7 @@ FIN_DEC_ALARMA:
 	RET
 
 
-CONFIGURAR_PUERTOS:
-    // Configurar PORTB como salida para selección de displays
-    LDI     R16, 0xFF		// 0b00001111 (PB0-PB3 como salidas)
-    OUT     DDRB, R16
-    
-	// Configurar PORD como salida para segmentos de displays
-	LDI		R16, 0xFF		// 0b1111111 (PD0-PD6 como salidas, PD7 reservado para buzzer)
-	OUT     DDRD, R16
 
-	RET
 
 TIMER0_ISR:
     PUSH    R16
