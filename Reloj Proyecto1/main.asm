@@ -50,14 +50,23 @@
 
 //.def CONTADOR = R19  // Variable para el contador
 
+// Inicio del programa
+INICIO:
+	CALL	CONFIGURAR_PILA
+	CALL	CONFIGURAR_RELOJ
+	CALL	CONFIGURAR_PUERTOS
+	CALL	CONFIGURAR_TIMERS
+
+	SEI		// Habilita interrupciones globales
+	RJMP	MAIN
+
 // Configuración del Stack
     LDI     R16, LOW(RAMEND)
     OUT     SPL, R16
     LDI     R16, HIGH(RAMEND)
     OUT     SPH, R16
 
-// Inicio del programa
-INICIO:
+
 
     // Configurar Prescaler
     LDI     R16, (1 << CLKPCE)
