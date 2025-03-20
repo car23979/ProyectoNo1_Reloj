@@ -99,6 +99,9 @@ CONFIGURAR_PUERTOS:
 	LDI		R16, 0x1F
 	OUT		PORTC, R16		// Activar Pull-ups en botones
 	RET
+
+MAIN:
+    RJMP    MAIN
 /*
     // Inicializar Timer0
     CALL    INICIALIZAR_TIMER
@@ -131,8 +134,7 @@ CONFIGURAR_PUERTOS:
 
     LDI     R17, 0x00  // Inicializar contador
 
-BUCLE_PRINCIPAL:
-    RJMP    BUCLE_PRINCIPAL
+
 
 // SUBRUTINAS
 
