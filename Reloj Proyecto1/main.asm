@@ -888,3 +888,29 @@ RESET_DECENAS_MES:
 
 SEGUIR3:
 	RET
+
+// ------------------------------------------------------- Subrutina para configurar alarma -----------------------------------------------
+// -------------------------------------------------------  Se incrementan minutos alarma -------------------------------------------------
+INC_DISP_MINAL:
+	MOV		R16, R5					// Se copia el valor de unidades min alarma
+	INC		R16						// Incrementa el valor
+	CPI		R16, 0x0A				// Compara el valor del contador 
+    BREQ	OVF_DEC_AL				// Si al comparar no es igual, salta a mostrarlo
+	MOV		R5, R16					// Actualizar el valor de unidades
+	LPM		R4, Z
+	RET								// Salir
+
+OVF_DEC_AL:
+    CLR		R5						// Resetea el contador de unidades a 0
+	MOV		R16, R3					// Copia el valor de decenas de min alarma
+	INC		R16						// Incrementamos el contador de decenas de minutos
+	CPI		R16, 0x06				// Comparamos si ya es 6
+	BREQ	RESETEO_MIN_AL			// Si no es 6, sigue para actualizar
+	MOV		R3, R16					// Antes de salir, actualizar decenas de minutos
+	RET
+
+RESETEO_MIN_AL:
+    LDI		R16, 0x00
+	MOV		R5, R16					// Resetea el contador a 0
+	MOV		R3, R16
+	RET
