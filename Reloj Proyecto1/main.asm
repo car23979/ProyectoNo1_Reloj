@@ -599,159 +599,61 @@ DEC_HOR_ALARM:
 	CALL	DEC_DISP_HORAL
 	LDI		ACCION, 0x00
 	RET
-	/*
 
-// MODIFICACIONES NUEVAS
+// --------------------------------------------------- Sub rutina para alarma ------------------------------------------
+TAL_VEZ_WAKE_UP:
+	// Se compara la hora de la alarma con la actual
+	CP		R5, R19					// Comparamos unidades min
+	BREQ	CONFIRMAR_DECENAS
+	RET 
 
-CONFIGURAR_BOTONES:
-    // Configurar PORTC como entrada
-    LDI     R16, (1 << PC4) | (1 << PC5)
-    OUT     DDRC, R16
-
-	// Habilitar pull-ups internos en PC0-PC3
-    LDI     R16, (1 << PC0) | (1 << PC1) | (1 << PC2) | (1 << PC3)
-    OUT     PORTC, R16
-
-	// Habilitar interrupciones de cambio de pin (PCINT1 para PORTC)
-	LDI		R16, (1 << PCIE1)
-	STS		PCICR, R16
-
-	// Habilitar interrupciones solo en PC0-PC3 (PCINT8-PCINT11)
-	LDI		R16, (1 << PCINT8) | (1 << PCINT9) | (1 << PCINT10) | (1 << PCINT11)
-	STS		PCMSK1, R16
-
+CONFIRMAR_DECENAS:
+	CP		R3, R22					// Comparamos decenas min
+	BREQ	CONFIRMAR_UNI_HRS
 	RET
 
-BOTON_ISR:
+CONFIRMAR_UNI_HRS: 
+	CP		R12, R23				// Comparamos unidades hrs
+	BREQ	CONFIRMAR_DEC_HRS	
+	RET
+
+CONFIRMAR_DEC_HRS: 
+	CP		R13, R25				// Comparamos decenas hrs
+	BREQ	WAKE_UP
 	
-	PUSH	R16
-	IN		R16, SREG
-	PUSH	R16
+WAKE_UP: 
+	SBI		PINB, PB5				// Se enciende la alarma
+	RET
 
-	// Leer estados de los botones en PORTC
-	IN		R16, PINC
+SHOW_WAKE_UP: 
+	LDI		R16, 0x3E				// Valor para U
+	MOV		R6, R16
+	LDI		R16, 0x67				// Valor para P
+	MOV		R8, R16					// Se mostrar? UP en modo apagar alarma
+	RET
+// --------------------------------------------------------- Apagar alarma ------------------------------------------------
+TURN_ME_OFF: 
+	SBIC	PINB, PB5				// Si est? apagada no hace nada
+	SBI		PINB, PB5				// Si est? encendida la apaga
+	RET	
 
-	// Si el buzzer está activo, el boton 4 lo apaga
-	TST		BUZZER_FLAG			// Verificar si la alarma está encendida
-	BREQ	CONTINUAR_BOTONES	// Si buzzer_flag=0, continuar con botones
-	SBIC	R16, 3			// Si el boton 4 esta presionado
-	RJMP	APAGAR_BUZZER		// Ir a la subrutina de apagado
+// ------------------------------------------------- Subrutina para incrementar minutos ------------------------------------
+INC_DISP1: 		
+	INC		R19						// Incrementa el valor
+	CPI		R19, 0x0A				// Compara el valor del contador 
+    BREQ	OVER_DECENAS			// Si al comparar no es igual, salta a mostrarlo
+	LPM		R4, Z
+	RET					
 
+OVER_DECENAS:
+    LDI		R19, 0x00				// Resetea el contador de unidades a 0
+	INC		R22						// Incrementamos el contador de decenas de minutos
+	CPI		R22, 0x06				// Comparamos si ya es 6
+	BREQ	RESETEO_HORA			// Si no es 6, sigue para actualizar
+	RET
 
-TIMER0_ISR:
-    PUSH    R16
-	PUSH	R17
-	PUSH	R18
-    IN      R16, SREG
-    PUSH    R16
-	
-	// Apagar todos los displays
-	LDI		R16, 0x00
-	OUT		PORTB, R16
-	// Incrementar índice del display actual
-
-    INC     DISPLAY_INDEX  // Incrementar contador de interrupciones
-    CPI     DISPLAY_INDEX, 4  // Si llega a 4, reiniciar a 0
-    BRNE    CONTINUAR
-    CLR     DISPLAY_INDEX  // Reiniciar contador
-
-TIMER1_ISR:
-	PUSH	R16
-	IN		R16, SREG
-	PUSH	R16
-
-	INC		BLINK_COUNTER
-	CPI		BLINK_COUNTER, 50		// 50 * 10 ms = 500 ms
-	BRNE	CONTINUAR_ISR
-	CLR		BLINK_COUNTER			// Reiniciar contador
-	IN		R16, PORTB
-	EOR		R16, (1 << PB4)			// Alternar LED de los dos puntos
-	OUT		PORTB, R16
-
-CONTINUAR_ISR:
-	// Incrementar el contador de segudos
-	INC		SEGUNDO
-	CPI		SEGUNDO, 60
-	BRNE	FIN_ISR
-
-	CLR		SEGUNDO
-	INC		MINUTO
-	CPI		MINUTO,	60
-	BRNE	FIN_ISR
-
-	CLR		MINUTO
-	INC		HORA
-	CPI		HORA, 24
-	BRNE	FIN_ISR
-	CLR		HORA
-
-	// Comparar hora actual con la alarma
-	CP		HORA, HORA_ALARMA
-	BRNE	FIN_ISR
-	CP		MINUTO, MIN_ALARMA
-	BRNE	FIN_ISR
-
-	// Si hora = hora_alarma y minuto = min_alarma activar buzzer
-	SBI		PORTD, 7		// Activar buzzer en PD7
-	LDI		BUZZER_FLAG, 1	// Indicar que el buzzer esta sonando
-
-
-CONTINUAR:
-	// Selección de displays correspondientes
-	LDI		ZL, LOW(DIGITO_DISPLAY << 1)
-	LDI		ZH, HIGH(DIGITO_DISPLAY << 1)
-	ADD		ZL, DISPLAY_INDEX
-	LPM		R16, Z
-	OUT		PORTB, R16
-
-	// Obtener número correspondiente 
-	LDI		ZL, LOW(TABLA_DISPLAY << 1)
-	LDI		ZH, HIGH(TABLA_DISPLAY << 1)
-
-	// Determinar que número mostrar en el display actual
-	CPI		DISPLAY_INDEX, 0
-	BRNE	CHECAR_2
-	MOV		R18, HORA		// Primer digito
-	RJMP	CARGAR_NUMERO
-
-CHECAR_2:
-	CPI		DISPLAY_INDEX, 1
-	BRNE	CHECAR_3
-	MOV		R18, HORA		// Segundo digito
-	RJMP	CARGAR_NUMERO
-
-CHECAR_3:
-	CPI		DISPLAY_INDEX, 2
-	BRNE	CHECAR_4
-	MOV		R18, MINUTO		// Tercer digito
-	RJMP	CARGAR_NUMERO
-
-CHECAR_4:
-	MOV		R18, MINUTO		// Cuarto digito
-
-CARGAR_NUMERO:
-	ANDI	R18, 0x0F		// Asegurar que se un digito de 0-9
-	ADD		ZL, R18			// Apuntar al número de la tabla
-	LPM		R16, Z			// Cargar patrón de 7 segmentos en R16
-
-	// PD7 no se ve afectado
-	LDI		R17, 0x7F
-	AND		R16, R17	// Apagar sin afectar los segmentos
-	OUT		PORTD, R16	// Enviar al display
-
-	POP		R16
-	OUT		SREG, R16
-	POP		R16
-	RETI
-
-FIN_ISR:
-    CALL    ACTUALIZAR_DISPLAY
-    POP     R16
-    OUT     SREG, R16
-    POP     R16
-    RETI
-
-ACTUALIZAR_DISPLAY:
-    // Código para actualizar el display
-    RET
+RESETEO_HORA:
+    LDI		R19, 0x00				// Resetea el contador a 0
+	LDI		R22, 0x00
+	RET
 
