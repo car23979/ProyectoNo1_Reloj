@@ -174,6 +174,289 @@ CALL_APAGAR_ALARMA:
 	CALL	ALARM_OFF
 	RJMP	MAIN
 
+// ---------------------------------------------- Subrutina de multiplexaci?n -----------------------------------
+MULTIPLEX:
+	CPI		R17, 0				// Modo reloj normal
+	BREQ	MULTIPLEX_HORA		
+	CPI		R17, 1				// Modo fecha normal
+	BREQ	MULTIPLEX_FECHA
+	CPI		R17, 2				// Modo config minutos
+	BREQ	MULTIPLEX_HORA
+	CPI		R17, 3				// Modo config horas
+	BREQ	MULTIPLEX_HORA
+	CPI		R17, 4				// Modo config mes
+	BREQ	MULTIPLEX_FECHA
+	CPI		R17, 5				// Modo config dias
+	BREQ	MULTIPLEX_FECHA
+	CPI		R17, 6				// Modo config min alarma
+	BREQ	MULTIPLEX_ALARMA
+	CPI		R17, 7				// Modo config horas alarma
+	BREQ	MULTIPLEX_ALARMA
+	CPI		R17, 8				// Modo apagar alarma
+	BREQ	MULTIPLEX_ALARMA_OFF
+	RET
+MULTIPLEX_HORA: 
+	// Se multiplexan displays
+	MOV		R16, R24				// Se copia el valor de R24 (del timer0) 
+	ANDI	R16, 0b00000011			// Se realiza un ANDI, con el prop?sito de multiplexar displays
+	CPI		R16, 0 
+	BREQ	MOSTRAR_UNI_MIN
+	CPI		R16, 1
+	BREQ	MOSTRAR_DEC_MIN
+	CPI		R16, 2
+	BREQ	MOSTRAR_UNI_HOR
+	CPI		R16, 3
+	BREQ	MOSTRAR_DEC_HOR
+	RET
+MULTIPLEX_FECHA:
+	MOV		R16, R24				// Se copia el valor de R24 (del timer0)
+	ANDI	R16, 0b00000011			// Se realiza un ANDI, con el prop?sito de multiplexar displays
+	CPI		R16, 0 
+	BREQ	MOSTRAR_UNIDAD_MES
+	CPI		R16, 1
+	BREQ	MOSTRAR_DECENA_MES
+	CPI		R16, 2
+	BREQ	MOSTRAR_UNIDAD_DIA
+	CPI		R16, 3
+	BREQ	MOSTRAR_DECENA_DIA
+	RET
+MULTIPLEX_ALARMA:
+	MOV		R16, R24				// Se copia el valor de R24 (del timer0)
+	ANDI	R16, 0b00000011			// Se realiza un ANDI, con el prop?sito de multiplexar displays
+	CPI		R16, 0 
+	BREQ	MOSTRAR_UNIDAD_MIN_AL
+	CPI		R16, 1
+	BREQ	MOSTRAR_DECENA_MIN_AL
+	CPI		R16, 2
+	BREQ	MOSTRAR_UNIDAD_HOR_AL
+	CPI		R16, 3
+	BREQ	MOSTRAR_DECENA_HOR_AL
+	RET
+MULTIPLEX_ALARMA_OFF:
+	RJMP	MULTI_AL_OFF
+
+// ---------------------------------------- Sub-rutinas para multiplexaci?n de displays -----------------------------------
+MOSTRAR_UNI_MIN:
+	CBI		PORTC, PC1				// Se deshabilita transistor para PC1
+	CBI		PORTC, PC2				// Se deshabilita transistor para PC2
+	CBI		PORTC, PC3				// Se deshabilita transistor para PC3
+	CBI		PORTC, PC0				// Habilitar transistor 1 - Unidades minutos
+	// Mostrar unidades de minutos
+	LDI		ZL, LOW(TABLITA<<1)
+	LDI		ZH, HIGH(TABLITA<<1)
+	ADD		ZL, R19					// Cargar el valor del contador de unidades a z
+	LPM		R4, Z					// Guardar el valor de Z
+	CBI		PORTC, PC1				// Se deshabilita transistor para PC1
+	CBI		PORTC, PC2				// Se deshabilita transistor para PC2
+	CBI		PORTC, PC3				// Se deshabilita transistor para PC3
+	SBI		PORTC, PC0				// Habilitar transistor 1 - Unidades minutos
+	OUT		PORTD, R4
+	RET
+MOSTRAR_DEC_MIN: 
+	// Mostrar decenas de minutos
+	LDI		ZL, LOW(TABLITA<<1)
+	LDI		ZH, HIGH(TABLITA<<1)
+	ADD		ZL, R22					// Cargar el valor del contador de unidades a z
+	LPM		R4, Z					// Guardar el valor de Z
+	CBI		PORTC, PC0				// Se deshabilita transistor para PC0
+	CBI		PORTC, PC2				// Se deshabilita transistor para PC2
+	CBI		PORTC, PC3				// Se deshabilita transistor para PC3
+	SBI		PORTC, PC1				// Habilitar transistor 2 - Decenas minutos
+	OUT		PORTD, R4
+	RET
+
+MOSTRAR_UNIDAD_MES:
+	RJMP	MOSTRAR_UNI_MES
+MOSTRAR_DECENA_MES:
+	RJMP	MOSTRAR_DEC_MES
+MOSTRAR_UNIDAD_DIA:
+	RJMP	MOSTRAR_UNI_DIA
+MOSTRAR_DECENA_DIA:
+	RJMP	MOSTRAR_DEC_DIA
+
+MOSTRAR_UNI_HOR: 
+	// Mostrar decenas de horas
+	LDI		ZL, LOW(TABLITA<<1)
+	LDI		ZH, HIGH(TABLITA<<1)
+	ADD		ZL, R23					// Cargar el valor del contador de unidades a z
+	LPM		R4, Z					// Guardar el valor de Z
+	CBI		PORTC, PC0				// Se deshabilita transistor para PC0
+	CBI		PORTC, PC1				// Se deshabilita transistor para PC1
+	CBI		PORTC, PC3				// Se deshabilita transistor para PC3
+	SBI		PORTC, PC2				// Habilitar transistor 3 - Unidades horas
+	OUT		PORTD, R4
+	RET
+MOSTRAR_DEC_HOR:  
+	// Mostrar decenas de horas
+	LDI		ZL, LOW(TABLITA<<1)
+	LDI		ZH, HIGH(TABLITA<<1)
+	ADD		ZL, R25					// Cargar el valor del contador de unidades a z
+	LPM		R4, Z					// Guardar el valor de Z
+	CBI		PORTC, PC0				// Se deshabilita transistor para PC0
+	CBI		PORTC, PC1				// Se deshabilita transistor para PC1
+	CBI		PORTC, PC2				// Se deshabilita transistor para PC2
+	SBI		PORTC, PC3				// Habilitar transistor 4 - Decenas horas
+	OUT		PORTD, R4
+	RET
+
+MOSTRAR_UNIDAD_MIN_AL:
+	RJMP	MOSTRAR_UNI_MIN_AL
+MOSTRAR_DECENA_MIN_AL:
+	RJMP	MOSTRAR_DEC_MIN_AL
+MOSTRAR_UNIDAD_HOR_AL:
+	RJMP	MOSTRAR_UNI_HOR_AL
+MOSTRAR_DECENA_HOR_AL:
+	RJMP	MOSTRAR_DEC_HOR_AL	
+
+// Multiplexaci?n de fecha
+MOSTRAR_UNI_MES:
+	// Mostrar unidades de minutos
+	LDI		ZL, LOW(TABLITA<<1)
+	LDI		ZH, HIGH(TABLITA<<1)
+	ADD		ZL, R28					// Cargar el valor del contador de unidades a z
+	LPM		R4, Z					// Guardar el valor de Z
+	CBI		PORTC, PC1				// Se deshabilita transistor para PC1
+	CBI		PORTC, PC2				// Se deshabilita transistor para PC2
+	CBI		PORTC, PC3				// Se deshabilita transistor para PC3
+	SBI		PORTC, PC0				// Habilitar transistor 1 - Unidades minutos
+	OUT		PORTD, R4
+	RET
+MOSTRAR_DEC_MES: 
+	// Mostrar decenas de minutos
+	LDI		ZL, LOW(TABLITA<<1)
+	LDI		ZH, HIGH(TABLITA<<1)
+	ADD		ZL, R29					// Cargar el valor del contador de unidades a z
+	LPM		R4, Z					// Guardar el valor de Z
+	CBI		PORTC, PC0				// Se deshabilita transistor para PC0
+	CBI		PORTC, PC2				// Se deshabilita transistor para PC2
+	CBI		PORTC, PC3				// Se deshabilita transistor para PC3
+	SBI		PORTC, PC1				// Habilitar transistor 2 - Decenas minutos
+	OUT		PORTD, R4
+	RET
+MOSTRAR_UNI_DIA: 
+	// Mostrar decenas de horas
+	LDI		ZL, LOW(TABLITA<<1)
+	LDI		ZH, HIGH(TABLITA<<1)
+	ADD		ZL, R26					// Cargar el valor del contador de unidades a z
+	LPM		R4, Z					// Guardar el valor de Z
+	CBI		PORTC, PC0				// Se deshabilita transistor para PC0
+	CBI		PORTC, PC1				// Se deshabilita transistor para PC1
+	CBI		PORTC, PC3				// Se deshabilita transistor para PC3
+	SBI		PORTC, PC2				// Habilitar transistor 3 - Unidades horas
+	OUT		PORTD, R4
+	RET
+MOSTRAR_DEC_DIA:  
+	// Mostrar decenas de horas
+	LDI		ZL, LOW(TABLITA<<1)
+	LDI		ZH, HIGH(TABLITA<<1)
+	ADD		ZL, R27					// Cargar el valor del contador de unidades a z
+	LPM		R4, Z					// Guardar el valor de Z
+	CBI		PORTC, PC0				// Se deshabilita transistor para PC0
+	CBI		PORTC, PC1				// Se deshabilita transistor para PC1
+	CBI		PORTC, PC2				// Se deshabilita transistor para PC2
+	SBI		PORTC, PC3				// Habilitar transistor 4 - Decenas horas
+	OUT		PORTD, R4
+	RET
+
+// Multiplexaci?n para alarma
+MOSTRAR_UNI_MIN_AL:
+	// Mostrar unidades de minutos
+	LDI		ZL, LOW(TABLITA<<1)
+	LDI		ZH, HIGH(TABLITA<<1)
+	ADD		ZL, R5					// Cargar el valor del contador de unidades a z
+	LPM		R4, Z					// Guardar el valor de Z
+	CBI		PORTC, PC1				// Se deshabilita transistor para PC1
+	CBI		PORTC, PC2				// Se deshabilita transistor para PC2
+	CBI		PORTC, PC3				// Se deshabilita transistor para PC3
+	SBI		PORTC, PC0				// Habilitar transistor 1 - Unidades minutos
+	OUT		PORTD, R4
+	RET
+MOSTRAR_DEC_MIN_AL: 
+	// Mostrar decenas de minutos
+	LDI		ZL, LOW(TABLITA<<1)
+	LDI		ZH, HIGH(TABLITA<<1)
+	ADD		ZL, R3					// Cargar el valor del contador de unidades a z
+	LPM		R4, Z					// Guardar el valor de Z
+	CBI		PORTC, PC0				// Se deshabilita transistor para PC0
+	CBI		PORTC, PC2				// Se deshabilita transistor para PC2
+	CBI		PORTC, PC3				// Se deshabilita transistor para PC3
+	SBI		PORTC, PC1				// Habilitar transistor 2 - Decenas minutos
+	OUT		PORTD, R4
+	RET
+MOSTRAR_UNI_HOR_AL: 
+	// Mostrar decenas de horas
+	LDI		ZL, LOW(TABLITA<<1)
+	LDI		ZH, HIGH(TABLITA<<1)
+	ADD		ZL, R12					// Cargar el valor del contador de unidades a z
+	LPM		R4, Z					// Guardar el valor de Z
+	CBI		PORTC, PC0				// Se deshabilita transistor para PC0
+	CBI		PORTC, PC1				// Se deshabilita transistor para PC1
+	CBI		PORTC, PC3				// Se deshabilita transistor para PC3
+	SBI		PORTC, PC2				// Habilitar transistor 3 - Unidades horas
+	OUT		PORTD, R4
+	RET
+MOSTRAR_DEC_HOR_AL:  
+	// Mostrar decenas de horas
+	LDI		ZL, LOW(TABLITA<<1)
+	LDI		ZH, HIGH(TABLITA<<1)
+	ADD		ZL, R13					// Cargar el valor del contador de unidades a z
+	LPM		R4, Z					// Guardar el valor de Z
+	CBI		PORTC, PC0				// Se deshabilita transistor para PC0
+	CBI		PORTC, PC1				// Se deshabilita transistor para PC1
+	CBI		PORTC, PC2				// Se deshabilita transistor para PC2
+	SBI		PORTC, PC3				// Habilitar transistor 4 - Decenas horas
+	OUT		PORTD, R4
+	RET
+
+// Multiplexaci?n para modo de apagar alarma
+MULTI_AL_OFF:
+	MOV		R16, R24				// Se copia el valor de R24 (del timer0)
+	ANDI	R16, 0b00000011			// Se realiza un ANDI, con el prop?sito de multiplexar displays
+	CPI		R16, 0 
+	BREQ	MOSTRAR_UNI_MIN_AL_OFF
+	CPI		R16, 1
+	BREQ	MOSTRAR_DEC_MIN_AL_OFF
+	CPI		R16, 2
+	BREQ	MOSTRAR_UNI_HOR_AL_OFF
+	CPI		R16, 3
+	BREQ	MOSTRAR_DEC_HOR_AL_OFF
+	RET
+
+MOSTRAR_UNI_MIN_AL_OFF:
+	// Mostrar unidades de minutos
+	CBI		PORTC, PC1				// Se deshabilita transistor para PC1
+	CBI		PORTC, PC2				// Se deshabilita transistor para PC2
+	CBI		PORTC, PC3				// Se deshabilita transistor para PC3
+	SBI		PORTC, PC0				// Habilitar transistor 1 - Unidades minutos
+	OUT		PORTD, R8
+	RET
+MOSTRAR_DEC_MIN_AL_OFF: 
+	// Mostrar decenas de minutos
+	CBI		PORTC, PC0				// Se deshabilita transistor para PC0
+	CBI		PORTC, PC2				// Se deshabilita transistor para PC2
+	CBI		PORTC, PC3				// Se deshabilita transistor para PC3
+	SBI		PORTC, PC1				// Habilitar transistor 2 - Decenas minutos
+	OUT		PORTD, R6
+	RET
+MOSTRAR_UNI_HOR_AL_OFF: 
+	// Mostrar decenas de horas
+	CBI		PORTC, PC0				// Se deshabilita transistor para PC0
+	CBI		PORTC, PC1				// Se deshabilita transistor para PC1
+	CBI		PORTC, PC3				// Se deshabilita transistor para PC3
+	SBI		PORTC, PC2				// Habilitar transistor 3 - Unidades horas
+	OUT		PORTD, R8
+	RET
+MOSTRAR_DEC_HOR_AL_OFF:  
+	// Mostrar decenas de horas
+	CBI		PORTC, PC0				// Se deshabilita transistor para PC0
+	CBI		PORTC, PC1				// Se deshabilita transistor para PC1
+	CBI		PORTC, PC2				// Se deshabilita transistor para PC2
+	SBI		PORTC, PC3				// Habilitar transistor 4 - Decenas horas
+	OUT		PORTD, R6
+	RET
+
+	/*
+
 // MODIFICACIONES NUEVAS
 
 CONFIGURAR_BOTONES:
