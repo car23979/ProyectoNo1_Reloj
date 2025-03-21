@@ -674,3 +674,128 @@ RESET_MINUTOS:
 RESET_DECENAS:
 	LDI		R22, 0x05
 	RET
+
+// ----------------------------------------------- Subrutina para incrementar horas --------------------------------------------
+INC_DISP2: 	
+	CPI		R25, 0x02				// Compara valor de decenas de horas
+	BREQ	LLEGA_24				// Revisa si llega a 20 y salta				
+	RJMP	FORMATO24		
+
+LLEGA_24: 
+	CPI		R23, 0x03				// Compara para lograr formato de 24 horas
+	BREQ	OVF_UNI_HORA	
+	RJMP	FORMATO24				// Resetea contador de unidades de horas	
+
+FORMATO24: 
+	INC		R23
+	CPI		R23, 0x0A
+	BRNE	SALIR2
+	LDI		R23, 0x00
+	INC		R25
+	RJMP	SALIR2
+
+OVF_UNI_HORA: 
+	LDI		R23, 0x00				// Resetea las unidades de las horas
+	LDI		R25, 0x00				// Incrementa las decenas de horas
+	RJMP	SALIR2
+
+SALIR2: 
+	RET
+
+// ------------------------------------------------- Subrutina para decrementar horas ------------------------------------------
+DEC_DISP2: 
+	// Decrementar horas	
+	CPI		R25, 0x00
+	BREQ	REVISAR_UNI
+	RJMP	DEC_HOURS
+
+REVISAR_UNI: 
+	CPI		R23, 0x00
+	BREQ	RESET_DECENAS2
+	RJMP	DEC_HOURS
+
+DEC_HOURS: 
+	DEC		R23						// R23 decrementar?
+	CPI		R23, 0xFF				// Si el contador llega a 0, reiniciar el contador
+	BRNE	SEGUIR2
+	LDI		R23, 0x09
+	DEC		R25						// Si es igual a 0 no hace nada y vuelve a main
+	RET								// Regresa a main si ya decremento
+
+RESET_DECENAS2:
+	LDI		R23, 0x03
+	LDI		R25, 0x02				// Compara valor de decenas de horas		
+	RET	
+
+SEGUIR2:
+	RET
+
+// --------------------------------------------------- Se incrementan los d?as ---------------------------------------------------
+INC_DISP_DIA:
+	INC		R26						// Se incrementan las unidades de d?as
+	CPI		R26, 0x0A				// Se compara para saber si lleg? a 10
+	BREQ	INC_DEC_DIAS			// Si es 10, se incrementan las decenas
+	CALL	VERIFY_DIAS				// Revisa que la cantidad de d?as coincidan con el mes
+	RET
+
+INC_DEC_DIAS: 
+	LDI		R26, 0x00				// Se reinicia el contador de unidades d?as
+	INC		R27						// Se incrementan las decenas de d?as
+	CPI		R27, 0x04				// Se compara con 4 porque el maximo de dec son 3
+	BREQ	RESET_DIAS
+	RET
+
+RESET_DIAS:
+	LDI		R27, 0x00				// Se reinician las decenas 
+	LDI		R26, 0x01				// Se reinician los d?as a 1 (el mes empieza en dia 1) 
+	RET
+
+// ------------------------------------------------- Se decrementan los d?as ------------------------------------------------------
+DEC_DISP_DIA:
+	CPI		R27, 0x00				// Se revisan las decenas de los d?as
+	BREQ	DEC_UNIDADES_DIAS
+	RJMP	DEC_DEC_DIAS
+
+DEC_UNIDADES_DIAS: 
+	DEC		R26						// Se decrementan los d?as
+	CPI		R26, 0x00				// Se revisa si los d?as hicieron underflow
+	BREQ	AJUSTAR_MES				// Si hay underflow, se cargan los valores de d?as
+	RET
+
+DEC_DEC_DIAS:
+	DEC		R26						// Si las decenas aun no son 0, decrementan unidades
+	CPI		R26, 0xFF				// Se compara para saber si lleg? a 0
+	BRNE	SALIR_DIAS				// Si aun no es 0, sigue
+	LDI		R26, 0x09				// Se carga 9 a las unidades
+	DEC		R27						// Se decrementan las decenas de d?as	
+	RET
+
+SALIR_DIAS:
+		RET
+
+AJUSTAR_MES: 
+	LDI     ZL, LOW(MESES<<1)
+    LDI     ZH, HIGH(MESES<<1)
+
+	MOV		R6, R29					// Cargar decenas de mes
+	LSL		R6						// Correr a la izq -> X*2
+	MOV		R8, R6					// Se guarda el estado para poder sumar
+	LSL		R6						// Correr a la izq -> X*4
+	LSL		R6						// Correr a la izq -> X*8
+	ADD		R6, R8					// Se suman para -> X*10 (Encontre decenas)
+	// Encontrar unidad del mes
+	MOV     R16, R28		        // Cargar unidades de mes
+	ADD		R16, R6					// Se suma la decena con la unidad del mes
+    DEC     R16                     // Restar 1 (la tabla empieza en 0)
+    ADD     ZL, R16                 // Meter el ?ndice a Z 
+    LPM     R16, Z                  // Leer la cantidad de d?as del mes actual (Encuentro cuantos d?as hay)
+	
+	MOV		R27, R16				// Se copian los d?as a las decenas
+	LSR		R27
+	LSR		R27
+	LSR		R27
+	LSR		R27						// Se deja el valor de la decena como "unidad"
+	ANDI	R16, 0x0F				// Solo se guardan las unidades
+	MOV		R26, R16				// Se actualiza el valor de las unidades
+	RET
+

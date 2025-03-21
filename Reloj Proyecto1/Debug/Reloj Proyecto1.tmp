@@ -93,6 +93,7 @@
   <TURN_ME_OFF><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>635</LINE></TURN_ME_OFF>
   <INC_DISP1><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>641</LINE></INC_DISP1>
   <DEC_DISP1><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>661</LINE></DEC_DISP1>
+  <INC_DISP2><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>679</LINE></INC_DISP2>
   <TAL_VEZ_WAKE_UP><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>604</LINE></TAL_VEZ_WAKE_UP>
   <CONFIRMAR_DECENAS><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>610</LINE></CONFIRMAR_DECENAS>
   <CONFIRMAR_UNI_HRS><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>615</LINE></CONFIRMAR_UNI_HRS>
@@ -102,5 +103,9 @@
   <RESETEO_HORA><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>655</LINE></RESETEO_HORA>
   <RESET_MINUTOS><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>667</LINE></RESET_MINUTOS>
   <RESET_DECENAS><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>674</LINE></RESET_DECENAS>
+  <LLEGA_24><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>684</LINE></LLEGA_24>
+  <FORMATO24><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>689</LINE></FORMATO24>
+  <OVF_UNI_HORA><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>697</LINE></OVF_UNI_HORA>
+  <SALIR2><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>702</LINE></SALIR2>
  </LABELS>
 </ASSEMBLER_INFO>
