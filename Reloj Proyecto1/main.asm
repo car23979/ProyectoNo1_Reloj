@@ -18,73 +18,108 @@
 .org	0x0000							// Donde inicia el programa
 	JMP	START							// Tiene que saltar para no ejecutar otros
 
-.org	PCI0addr						// Direcci?n donde est? el vector interrupci?n PORTB
+.org	PCI0addr						// Dirección donde esta el vector interrupción PORTB
 	JMP	ISR_PCINT0
 
-.org	OVF1addr						// Direcci?n del vector para timer1
+.org	OVF1addr						// Dirección del vector para timer1
 	JMP	TIMER1_OVERFLOW
 
-.org	OVF0addr						// Direcci?n del vector para timer0
+.org	OVF0addr						// Dirección del vector para timer0
 	JMP	TIMER0_OVF
 
 
 //.def CONTADOR = R19  // Variable para el contador
 
 // Inicio del programa
-INICIO:
-	CALL	CONFIGURAR_PILA
-	CALL	CONFIGURAR_RELOJ
-	CALL	CONFIGURAR_PUERTOS
-	CALL	CONFIGURAR_TIMERS
-	CALL	CONFIGURAR_BOTONES
+TABLITA: .DB 0xC0, 0xF9, 0xA4, 0xB0, 0x99, 0x92, 0x82, 0xF8, 0x80, 0x90
+DIAS_POR_MES: .DB 32, 29, 32, 31, 32, 31, 32, 32, 31, 32, 31, 32
+MESES:		.DB	0x31, 0x28, 0x31, 0x30, 0x31, 0x30, 0x31, 0x31, 0x30, 0x31, 0x30, 0x31
 
-	SEI		// Habilita interrupciones globales
-	RJMP	MAIN
+START: 
+	// Configurar el SP en 0x03FF (al final de la SRAM) 
+	LDI		R16, LOW(RAMEND)			// Carga los bits bajos (0x0FF)
+	OUT		SPL, R16					// Configura spl = 0xFF -> r16
+	LDI		R16, HIGH(RAMEND)			// Carga los bits altos (0x03)
+	OUT		SPH, R16					// Configura sph = 0x03) -> r16
 
-CONFIGURAR_PILA:
-// Configuración del Stack
-    LDI     R16, LOW(RAMEND)
-    OUT     SPL, R16
-    LDI     R16, HIGH(RAMEND)
-    OUT     SPH, R16
-	RET
+SETUP:
 
-CONFIGURAR_RELOJ:
-    // Configurar Prescaler
-    LDI     R16, (1 << CLKPCE)
-    STS     CLKPR, R16  // Habilitar cambio de PRESCALER
-    LDI     R16, 0b00000100
-    STS     CLKPR, R16  // Prescaler a 16 (F_cpu = 1MHz)
-	RET
+	// Deshabilitar interrupciones globales
+	CLI	
+// ------------------------------------Configuración del TIMER0----------------------------------
+	// Utilizando oscilador a 1MHz - Permitir? parpadeo cada 500 ms
+	// Se configura prescaler principal
+	LDI		R16, (1 << CLKPCE)			// Se selecciona el bit del CLK (bit 7) 
+	STS		CLKPR, R16					// Se habilitar cambio para el prescaler
+	LDI		R16, 0b00000100				// En la tabla se ubica qu? bits deben encender
+	STS		CLKPR, R16					// Se configura prescaler a 16 para 1MHz
+	
+	CALL	INIT_TMR0
 
-CONFIGURAR_TIMERS:
-    LDI     R16, (1 << CS01) | (1 << CS00)
-    OUT     TCCR0B, R16  // Prescaler a 64
-    
-	LDI     R16, (1 << CS12) | (1 << CS10)
-    STS     TCNT0, R16  // Prescaler a 1024
+	LDI		R16, (1 << TOIE0)			// Habilita interrupci?n por desborde del TIMER0
+	STS		TIMSK0, R16										
+	
+// ------------------------------------Configuración del TIMER1----------------------------------
 
-	LDI		R16, HIGH(VALOR_T1) // Valor inicial
-	STS		TCNT1H, R16
-	LDI		R16, LOW(VALOR_T1)
-	STS		TCNT1L, R16
-    RET
+	CALL	INIT_TMR1
 
-CONFIGURAR_PUERTOS:
-    // Configurar PORTB como salida para selección de displays
-    LDI     R16, 0xFF		// 0b00001111 (PB0-PB3 como salidas)
-    OUT     DDRB, R16
-    
-	// Configurar PORD como salida para segmentos de displays
-	LDI		R16, 0xFF		// 0b1111111 (PD0-PD6 como salidas, PD7 reservado para buzzer)
-	OUT     DDRD, R16
+// Habilitar interrupci?n por desborde del TIMER1
+	LDI		R16, (1 << TOIE1)			// Habilita interrupci?n por desborde del TIMER1
+	STS		TIMSK1, R16					
 
-	LDI		R16, (1 << PC4) | (1 << PC5)  
-	OUT		DDRC, R16		// PC4 y PC5 LEDs modo
+// ------------------------------------Configuraci?n de los puertos----------------------------------
+	//	PORTD, PORTC y PB5 como salida 
+	LDI		R16, 0xFF
+	OUT		DDRD, R16					// Setear puerto D como salida (1 -> no recibe)
+	OUT		DDRC, R16					// Setear puerto C como salida 
+	LDI		R16, 0x00					// Se apagan las salidas
+	OUT		PORTD, R16
+	OUT		PORTC, R16
+	
+	// Configurar PB como entradas con pull ups habilitados
+	LDI		R16, (0 << PB1) | (0 << PB2) | (0 << PB4)	// Se configura PB1, PB2 y PB4 como entradas y PB5/PB3/PB1 como salida (0010 1010)
+	OUT		DDRB, R16
+	LDI		R16, (1 << PB0) | (1 << PB3) | (1 << PB5)	// Se configura PB1, PB2 y PB4 como entradas y PB5/PB3/PB1 como salida (0010 1010)
+	OUT		DDRB, R16
+	LDI		R16, (1 << PB1) | (1 << PB2) | (1 << PB4)
+	OUT		PORTB, R16					// Habilitar pull-ups 
+	CBI		PORTB, PB0					// Se le carga valor de 0 a PB0 (Salida apagada) 
+	CBI		PORTB, PB3					// Se le carga valor de 0 a PB3 (Salida apagada)
+	CBI		PORTB, PB5					// Se le carga valor de 0 a PB5 (Salida apagada)
 
-	LDI		R16, (1 << PC0) | (1 << PC1) | (1 << PC2) | (1 << PC3)
-	OUT		PORTC, R16		// Activar Pull-ups en botones
-	RET
+// ------------------------------------Configuraci?n de interrupci?n para botones----------------------------------
+	LDI		R16, (1 << PCINT1) | (1 << PCINT2) | (1 << PCINT4)	// Se seleccionan los bits de la m?scara (5)
+	STS		PCMSK0, R16								// Bits habilitados (PB0, PB1, PB2, PB3 y PB4) por m?scara		
+
+	LDI		R16, (1 << PCIE0)						// Habilita las interrupciones Pin-Change en PORTB
+	STS		PCICR, R16								// "Avisa" al registros PCICR que se habilitan en PORTB
+													// Da "permiso" "habilita"
+
+//---------------------------------------------INICIALIZAR DISPLAY-------------------------------------------------
+	CALL	INIT_DIS7
+	
+//---------------------------------------------------REGISTROS-----------------------------------------------------
+	CLR		R4										// Registro para valores de Z
+	CLR		R5										// Registro para unidades minutos alarma /
+	CLR		R3										// Registro para decenas minutos alarma /
+	CLR		R12										// Registro para unidades horas alarma /
+	CLR		R13										// Registro para decenas horas alarma /
+		  //R16 - MULTIUSOS GENERAL 
+	LDI		R17, 0x00								// Registro para contador de MODOS /
+	LDI		R18, 0xFF								// Registro para guardar estado de botones
+	LDI		R19, 0x00								// Registro para contador de unidades /(minutos) display
+	LDI		R20, 0x00								// Accion para timer /
+	LDI		R21, 0x00								// Registro para boton de accion /
+	LDI		R22, 0x00								// Registro para contador de decenas /(minutos)
+	LDI		R23, 0x00								// Registro para contador de unidades /(horas)
+	LDI		R24, 0x00								// Registro para contador de desbordamientos
+	LDI		R25, 0x00								// Registro para contador de decenas / (horas)
+	LDI		R26, 0x01								// Registro para contador de unidades /(d?as)
+	LDI		R27, 0x00								// Registro para contador de decenas /(d?as)
+	LDI		R28, 0x01								// Registro para contador de unidades /(meses)
+	LDI		R29, 0x00								// Registro para contador de decenas /(meses)
+	SEI												// Se habilitan interrupciones globales
+
 
 MAIN:
     RJMP    MAIN
@@ -499,13 +534,3 @@ ACTUALIZAR_DISPLAY:
     // Código para actualizar el display
     RET
 
-// Tabla de segmentos (ánodo común)
-TABLA_DISPLAY:
-    .DB 0xC0, 0xF9, 0xA4, 0xB0, 0x99, 0x92, 0x82, 0xF8, 0x80, 0x90
-
-// Tabla de Meses
-DIAS_MAX:
-	.DB 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31	// Enero - Diciembre
-
-DIGITO_DISPLAY:
-    .DB 0x01, 0x02, 0x04, 0x08  // Patrones para seleccionar displays
