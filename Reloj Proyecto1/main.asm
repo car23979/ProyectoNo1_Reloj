@@ -455,6 +455,99 @@ MOSTRAR_DEC_HOR_AL_OFF:
 	OUT		PORTD, R6
 	RET
 
+// -------------------------------------------------- MODOS --------------------------------------------------------
+RELOJ_NORMAL: 
+	// El modo reloj normal, ?nicamente quiero que sume en reloj normal
+	CBI		PORTC, PC4
+	CBI		PORTC, PC5
+	CBI		PORTB, PB3
+	CPI		R20, 0x01				// Se compara bandera de activaci?n
+	BRNE	NO_ES_EL_MODO			// Si no ha habido interrupci?n, sale
+	LDI		R20, 0x00
+	RJMP	CONTADOR				// Si hubo interrupci?n, va a la rutina para modificar el tiempo
+	RET
+
+FECHA_NORMAL: 
+	SBI		PORTC, PC4
+	CBI		PORTC, PC5
+	CBI		PORTB, PB3
+	CPI		R20, 0x01				// Se compara bandera de activaci?n
+	BRNE	NO_ES_EL_MODO
+	LDI		R20, 0x00				// Si hubo interrupci?n, va a la rutina para modificar el tiempo
+	RJMP	CONTADOR
+	RET
+NO_ES_EL_MODO: 
+	RET
+
+CONFIG_MIN: 
+	CBI		PORTC, PC4
+	SBI		PORTC, PC5
+	CBI		PORTB, PB3
+	SBI		PORTB, PB0				// No se permite toggle en leds cada 500ms
+	CPI		ACCION, 0x02			// Se revisa bandera de activaci?n
+	BREQ	INC_MIN					// Dependiendo del valor de la bandera inc o dec
+	CPI		ACCION, 0x03
+	BREQ	DEC_MIN
+	RET
+
+CONFIG_HOR: 
+	CBI		PORTC, PC4
+	CBI		PORTC, PC5
+	SBI		PORTB, PB3
+	SBI		PORTB, PB0				// No se permite toggle en leds cada 500ms
+	CPI		ACCION, 0x02			// Se revisa bandera de activaci?n
+	BREQ	INC_HOR					// Dependiendo del valor de la bandera inc o dec
+	CPI		ACCION, 0x03
+	BREQ	DEC_HOR
+	RET
+
+CONFIG_MES:
+	SBI		PORTC, PC4
+	CBI		PORTC, PC5
+	SBI		PORTB, PB3
+	SBI		PORTB, PB0				// No se permite toggle en leds cada 500ms
+	CPI		ACCION, 0x02			// Se revisa bandera de activaci?n
+	BREQ	INC_MES					// Dependiendo del valor de la bandera inc o dec
+	CPI		ACCION, 0x03
+	BREQ	DEC_MES
+	RET
+
+CONFIG_DIA:
+	SBI		PORTC, PC4
+	SBI		PORTC, PC5
+	CBI		PORTB, PB3
+	SBI		PORTB, PB0				// No se permite toggle en leds cada 500ms
+	CPI		ACCION, 0x02			// Se revisa bandera de activaci?n
+	BREQ	INC_DIA					// Dependiendo del valor de la bandera inc o dec
+	CPI		ACCION, 0x03
+	BREQ	DEC_DIA
+	RET
+
+CONFIG_MIN_ALARM:
+	CBI		PORTC, PC4
+	SBI		PORTC, PC5
+	SBI		PORTB, PB3
+	CPI		ACCION, 0x02			// Se revisa bandera de activaci?n
+	BREQ	INC_MIN_ALARM			// Dependiendo del valor de la bandera inc o dec
+	CPI		ACCION, 0x03
+	BREQ	DEC_MIN_ALARM
+	RET
+
+CONFIG_HOR_ALARM:
+	SBI		PORTC, PC4
+	SBI		PORTC, PC5
+	SBI		PORTB, PB3
+	CPI		ACCION, 0x02			// Se revisa bandera de activaci?n
+	BREQ	INC_HOR_ALARM			// Dependiendo del valor de la bandera inc o dec
+	CPI		ACCION, 0x03
+	BREQ	DEC_HOR_ALARM
+	RET
+
+ALARM_OFF:
+	CALL	SHOW_WAKE_UP
+	CALL	TURN_ME_OFF
+	RET
+
 	/*
 
 // MODIFICACIONES NUEVAS
