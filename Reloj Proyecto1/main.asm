@@ -938,3 +938,40 @@ RESET_DECENAS_AL:
 	LDI		R16, 0x05
 	MOV		R3, R16					// Se resetean decenas y se actualiza valor
 	RET
+
+// ------------------------------------------------------- Subrutina para incrementar horas alarma --------------------------------------------	
+INC_DISP_HORAL:
+	MOV		R16, R13				// Se copia el valor de decenas de horas
+	CPI		R16, 0x02				// Compara valor de decenas de horas
+	BREQ	LLEGA_24_AL				// Revisa si llega a 20 y salta				
+	RJMP	FORMATO24_AL		
+
+LLEGA_24_AL: 
+	MOV		R13, R16				// Antes de modificar R16, se actualizan las decenas
+	MOV		R16, R12				// Se copia el valor de unidades de horas
+	CPI		R16, 0x03				// Compara para lograr formato de 24 horas
+	BREQ	OVF_UNI_HORA_AL	
+	RJMP	FORMATO24_AL			// Resetea contador de unidades de horas	
+
+FORMATO24_AL: 
+	MOV		R16, R12				// Se copia el valor de unidades para modificar
+	INC		R16
+	CPI		R16, 0x0A				// Se revisa si las unidades llegaron a 10
+	MOV		R12, R16				// Se copia el valor actualizado para unidades
+	BRNE	SALIR4
+	MOV		R16, R12
+	LDI		R16, 0x00				// Si llega a 10, limpia las unidades
+	MOV		R12, R16				// Actualiza el valor de unidades
+	MOV		R16, R13
+	INC		R16						// Incrementa las decenas de horas
+	MOV		R13, R16
+	RJMP	SALIR4
+
+OVF_UNI_HORA_AL: 
+	LDI		R16, 0x00				// Resetea las horas
+	MOV		R12, R16
+	MOV		R13, R16				
+	RJMP	SALIR4
+
+SALIR4: 
+	RET
