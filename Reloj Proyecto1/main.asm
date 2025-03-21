@@ -975,3 +975,167 @@ OVF_UNI_HORA_AL:
 
 SALIR4: 
 	RET
+
+// -------------------------------------------------------- Subrutina para decrementar horas alarma ----------------------------------------------
+DEC_DISP_HORAL:	
+	MOV		R16, R13				// Copiar valor de decenas horas
+	CPI		R16, 0x00
+	BREQ	REVISAR_UNI_AL
+	RJMP	DEC_HOURS_AL
+
+REVISAR_UNI_AL: 
+	MOV		R16, R12				// Copiar el valor de unidades horas
+	CPI		R16, 0x00
+	BREQ	RESET_DECENAS2_AL
+	RJMP	DEC_HOURS_AL
+
+DEC_HOURS_AL: 
+	MOV		R16, R12
+	DEC		R16						// Decrementar? valor de unidades horas
+	MOV		R12, R16				// Actualizar valor de unidades horas
+	CPI		R16, 0xFF				// Si el contador llega a 0, reiniciar el contador
+	BRNE	SEGUIR4
+	LDI		R16, 0x09				// Si es 0, de carga el valor de 9 a las unidades
+	MOV		R12, R16
+	MOV		R16, R13
+	DEC		R16						// Si es igual a 0 no hace nada y vuelve a main
+	MOV		R13, R16				// Se actualiza el valor de decenas
+	RET								// Regresa a main si ya decremento
+
+RESET_DECENAS2_AL:
+	LDI		R16, 0x03
+	MOV		R12, R16
+	LDI		R16, 0x02				
+	MOV		R13, R16				// Se actualizan valores para las horas		
+	RET	
+
+SEGUIR4:
+	RET
+
+//---------------------------------------------------- INCREMENTA TIEMPO ------------------------------------------------
+CONTADOR: 
+	INC		R19						// Se aumenta el contador de unidades de minutos
+	CPI		R19, 0x0A				// Se compara para ver si ya sum? 
+    BREQ	DECENAS					// Si al comparar no es igual, salta a mostrarlo
+	CALL	TAL_VEZ_WAKE_UP		
+	RET
+
+DECENAS:
+	LDI		R19, 0x00				// Resetea el contador a 0
+	INC		R22						// Incrementamos el contador de decenas de minutos
+	CALL	TAL_VEZ_WAKE_UP	
+	CPI		R22, 0x06				// Comparamos si ya es 6
+	BREQ	HORAS					// Si no es 6, sigue para actualizar
+	CALL	TAL_VEZ_WAKE_UP	
+	RET
+
+HORAS:
+	LDI		R22, 0x00				// Resetea el contador de decenas de minutos
+	CALL	TAL_VEZ_WAKE_UP	
+	CPI		R25, 0x02				// Compara valor de decenas de horas
+	BRNE	NO_TOPAMOS				// Salta a rutina normal		
+	INC		R23
+	CALL	TAL_VEZ_WAKE_UP	
+	CPI		R23, 0x04				// Verifica el formato de 24 horas
+	BRNE	SEGUIR			
+	RJMP	YA_24
+	RET		
+
+NO_TOPAMOS: 
+	INC		R23						// Incrementa el contador de unidades de horas
+	CPI		R23, 0x0A				// Compara para lograr formato de 24 horas
+	BRNE	SEGUIR	
+	INC		R25
+	LDI		R23, 0x00				// Resetea contador de unidades de horas
+	CALL	TAL_VEZ_WAKE_UP		
+	RET
+
+SEGUIR: 
+	CALL	TAL_VEZ_WAKE_UP	
+	RET
+
+YA_24: 
+	LDI		R19, 0x00
+	LDI		R22, 0x00
+	LDI		R23, 0x00
+	LDI		R25, 0x00
+	CALL	TAL_VEZ_WAKE_UP	
+	CALL	INIT_DIS7
+	INC		R26						// Se incrementan las unidades de d?as
+	CPI		R26, 0x0A				// Se compara para saber si lleg? a 10
+	BREQ	INC_DECENAS_DIAS		// Si es 10, se incrementan las decenas
+	CALL	VERIFICAR_DIAS			// Revisa que la cantidad de d?as coincidan con el mes
+	RET
+
+INC_DECENAS_DIAS: 
+	LDI		R26, 0x00				// Se reinicia el contador de unidades d?as
+	INC		R27						// Se incrementan las decenas de d?as
+	CPI		R27, 0x04				// Se compara con 4 porque el maximo de dec son 3
+	BREQ	REINICIAR_DIAS
+	RET
+
+REINICIAR_DIAS:
+	LDI		R27, 0x00				// Se reinician las decenas 
+	LDI		R26, 0x01				// Se reinician los d?as a 1 (el mes empieza en dia 1) 
+	CALL	INCREMENTAR_MES
+	RET
+
+INCREMENTAR_MES: 
+	CPI		R29, 0x01
+	BREQ	REVISAR_MESES
+	RJMP	SEGUIR_MES
+
+REVISAR_MESES: 
+	CPI		R28, 0x02
+	BREQ	REINICIAR_MESES
+	RJMP	SEGUIR_MES
+
+SEGUIR_MES:
+	INC		R28						// Si ya pasaron los d?as, se incrementa el mes
+	CPI		R28, 0x0A				// Se compara para ver si ya es 10
+	BRNE	FIN_VERIFICAR_DIAS_MES
+	RJMP	INCREMENTAR_DECENAS_MES
+
+INCREMENTAR_DECENAS_MES: 
+	LDI		R28, 0x00				// Resetear unidades del mes
+	INC		R29						// Incrementar decenas mes 
+	RET
+
+REINICIAR_MESES: 
+	LDI		R29, 0x00
+	LDI		R28, 0x01				// Se reinician los meses al 1 (enero) 
+	RET
+
+VERIFICAR_DIAS:
+    // Cargar la direcci?n de la tabla DIAS_POR_MES
+    LDI     ZL, LOW(DIAS_POR_MES<<1)
+    LDI     ZH, HIGH(DIAS_POR_MES<<1)
+
+    // Calcular el ?ndice del mes actual (mes - 1)
+    MOV		R6, R29					// Cargar decenas de mes
+	LSL		R6						// Correr a la izq -> X*2
+	MOV		R8, R6					// Se guarda el estado para poder sumar
+	LSL		R6						// Correr a la izq -> X*4
+	LSL		R6						// Correr a la izq -> X*8
+	ADD		R6, R8					// Se suman para -> X*10
+	MOV     R16, R28		        // Cargar unidades de mes
+	ADD		R16, R6
+    DEC     R16                     // Restar 1 (la tabla empieza en 0)
+    ADD     ZL, R16                 // Meter el ?ndice a Z
+    LPM     R16, Z                  // Leer la cantidad de d?as del mes actual
+
+    // Comparar d?as actuales con d?as del mes
+    MOV     R10, R27		        // Cargar decenas de d?as
+    LSL	    R10                     // Convertir decenas a unidades (2 -> 20)
+								    // X*2 (Desplazar a la izquierda una vez)
+    MOV		R11, R10				// Guardamos el resultado temporalmente
+    LSL		R10						// X*4 (Otro desplazamiento a la izquierda)
+    LSL	    R10						// X*8 (Otro desplazamiento a la izquierda, ahora es X*8)
+    ADD		R10, R11				// (X*8) + (X*2) = X*10 
+    ADD     R10, R26		        // Sumar unidades de d?as (20 + 5 = 25)
+    CP      R10, R16                // Comparar con d?as del mes
+    BRLO    FIN_VERIFICAR_DIAS_MES  // Si es menor, no hacer nada
+    CALL    REINICIAR_DIAS          // Si es igual o mayor, reiniciar d?as
+
+FIN_VERIFICAR_DIAS_MES:
+    RET
