@@ -82,6 +82,11 @@ CONFIGURAR_TIMERS:
     
 	LDI     R16, (1 << CS12) | (1 << CS10)
     OUT     TCNT0, R16  // Prescaler a 1024
+
+	LDI		R16, HIGH(VALOR_T1) // Valor inicial
+	OUT		TCNT1H, R16
+	LDI		R16, LOW(VALOR_T1)
+	OUT		TCNT1L, R16
     RET
 
 CONFIGURAR_PUERTOS:
