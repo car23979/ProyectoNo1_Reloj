@@ -657,3 +657,20 @@ RESETEO_HORA:
 	LDI		R22, 0x00
 	RET
 
+// ------------------------------------------------ Subrutina para decrementar minutos --------------------------------------
+DEC_DISP1: 
+	DEC		R19						// R19 decrementar?
+	CPI		R19, 0xFF				// Si el contador llega a 0, reiniciar el contador
+	BREQ	RESET_MINUTOS			// Si es igual a 0 no hace nada y vuelve a main
+	RET					// Regresa a main si ya decremento
+
+RESET_MINUTOS: 
+	LDI		R19, 0x09
+	DEC		R22
+	CPI		R22, 0xFF
+	BREQ	RESET_DECENAS
+	RET
+
+RESET_DECENAS:
+	LDI		R22, 0x05
+	RET
