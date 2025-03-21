@@ -914,3 +914,27 @@ RESETEO_MIN_AL:
 	MOV		R5, R16					// Resetea el contador a 0
 	MOV		R3, R16
 	RET
+
+// --------------------------------------------------- Subrutina para decrementar minutos alarma -------------------------------------------
+DEC_DISP_MINAL:
+	MOV		R16, R5					// Copiar el valor de R5
+	DEC		R16						// "R5" decrementar?
+	CPI		R16, 0xFF				// Si el contador llega a 0, reiniciar el contador
+	BREQ	RESET_MINUTOS_AL		// Si es igual a 0 no hace nada y vuelve a main
+	MOV		R5, R16					// Actualizar el valor para R5
+	RET								// Regresa a main si ya decremento
+
+RESET_MINUTOS_AL: 
+	LDI		R16, 0x09
+	MOV		R5, R16					// Si hay underflow, corrige el valor para unidades
+	MOV		R16, R3					// Copiar valor de decenas para actualizarlo
+	DEC		R16
+	CPI		R16, 0xFF
+	BREQ	RESET_DECENAS_AL
+	MOV		R3, R16					// Si no ha topado sigue, se actualiza valor de decenas
+	RET
+
+RESET_DECENAS_AL:
+	LDI		R16, 0x05
+	MOV		R3, R16					// Se resetean decenas y se actualiza valor
+	RET
