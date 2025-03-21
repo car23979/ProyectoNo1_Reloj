@@ -1139,3 +1139,20 @@ VERIFICAR_DIAS:
 
 FIN_VERIFICAR_DIAS_MES:
     RET
+
+// -------------------------------------------- Se inicia el TIMER1 ---------------------------------------------------
+INIT_TMR1:
+	
+	LDI		R16, (1<<CS10)	// Se configura prescaler de 1024
+	STS		TCCR1B, R16					// Setear prescaler del TIMER 0 a 1024
+
+	// Cargar valor inicial en TCNT1 para desborde cada 1 minuto
+	LDI		R16, HIGH(VALOR_T1)			// Cargar el byte alto de 6942 (0x1B)
+	STS		TCNT1H, R16	
+	LDI		R16, LOW(VALOR_T1)			// Cargar el byte bajo de 6942 (0x1E)
+	STS		TCNT1L, R16
+	
+	LDI		R16, 0x00
+	STS		TCCR1A, R16					// Se configura en modo normal 
+
+	RET
