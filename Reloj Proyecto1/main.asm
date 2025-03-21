@@ -15,7 +15,7 @@
 .equ	TEMP_MINUTO_ADDR		= 0x0103
 .equ	TEMP_DIA_ADDR			= 0x0104
 .equ	TEMP_MES_ADDR			= 0x0105
-.equ	VALOR_T1				= 0x1B1E 
+.equ	VALOR_T1				= 0x03D0 
 
 // Definición de registros
 .def	MODE = R22			// Modo de operación
@@ -33,6 +33,7 @@
 .def	HORA_ALARMA	= R4	// Configura hora para alarma
 .def	MIN_ALARMA	= R5	// Configura minutos para alarma
 .def	BUZZER_FLAG	= R6	// Indica si el buzzer está activo
+
 
 .cseg
 
@@ -83,12 +84,12 @@ CONFIGURAR_TIMERS:
     OUT     TCCR0B, R16  // Prescaler a 64
     
 	LDI     R16, (1 << CS12) | (1 << CS10)
-    OUT     TCNT0, R16  // Prescaler a 1024
+    STS     TCNT0, R16  // Prescaler a 1024
 
 	LDI		R16, HIGH(VALOR_T1) // Valor inicial
-	OUT		TCNT1H, R16
+	STS		TCNT1H, R16
 	LDI		R16, LOW(VALOR_T1)
-	OUT		TCNT1L, R16
+	STS		TCNT1L, R16
     RET
 
 CONFIGURAR_PUERTOS:
@@ -100,10 +101,10 @@ CONFIGURAR_PUERTOS:
 	LDI		R16, 0xFF		// 0b1111111 (PD0-PD6 como salidas, PD7 reservado para buzzer)
 	OUT     DDRD, R16
 
-	LDI		R16, 0x20
+	LDI		R16, (1 << PC4) | (1 << PC5)  
 	OUT		DDRC, R16		// PC4 y PC5 LEDs modo
 
-	LDI		R16, 0x1F
+	LDI		R16, (1 << PC0) | (1 << PC1) | (1 << PC2) | (1 << PC3)
 	OUT		PORTC, R16		// Activar Pull-ups en botones
 	RET
 
@@ -114,11 +115,11 @@ MAIN:
 
 CONFIGURAR_BOTONES:
     // Configurar PORTC como entrada
-    LDI     R16, 0x00
+    LDI     R16, (1 << PC4) | (1 << PC5)
     OUT     DDRC, R16
 
 	// Habilitar pull-ups internos en PC0-PC3
-    LDI     R16, 0x0F
+    LDI     R16, (1 << PC0) | (1 << PC1) | (1 << PC2) | (1 << PC3)
     OUT     PORTC, R16
 
 	// Habilitar interrupciones de cambio de pin (PCINT1 para PORTC)
@@ -143,7 +144,7 @@ BOTON_ISR:
 	// Si el buzzer está activo, el boton 4 lo apaga
 	TST		BUZZER_FLAG			// Verificar si la alarma está encendida
 	BREQ	CONTINUAR_BOTONES	// Si buzzer_flag=0, continuar con botones
-	SBIC	R16, PC3			// Si el boton 4 esta presionado
+	SBIC	R16, 3			// Si el boton 4 esta presionado
 	RJMP	APAGAR_BUZZER		// Ir a la subrutina de apagado
 
 CONTINUAR_BOTONES:
