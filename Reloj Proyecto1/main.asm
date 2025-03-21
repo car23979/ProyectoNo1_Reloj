@@ -1156,3 +1156,67 @@ INIT_TMR1:
 	STS		TCCR1A, R16					// Se configura en modo normal 
 
 	RET
+
+// -------------------------------------------- Se inicia el TIMER0 ---------------------------------------------------
+INIT_TMR0:
+	// Cargar valor inicial en TCNT1 para desborde cada 5 ms
+	LDI		R16, (1<<CS01)
+	OUT		TCCR0B, R16					// Setear prescaler del TIMER 0 a 64
+	LDI		R16, VALOR_T0				// Indicar desde donde inicia -> desborde cada 5 ms
+	OUT		TCNT0, R16					// Cargar valor inicial en TCNT0
+
+	RET
+
+// -------------------------------------------- Se inicia tabla meses ---------------------------------------------------
+INIT_DIS7:
+	LDI		ZL, LOW(TABLITA<<1)
+	LDI		ZH, HIGH(TABLITA<<1)
+	LPM		R4, Z
+	OUT		PORTD, R4
+	RET
+//------------------------------------------ Rutina de interrupci?n del timer0 -----------------------------------------
+TIMER0_OVF: 	
+	SBI		TIFR0, TOV0
+	LDI		R16, VALOR_T0			// Se indica donde debe iniciar el TIMER
+	OUT		TCNT0, R16				
+	INC		R24						// R24 ser? un contador de la cant. de veces que lee el pin
+	CPI		R24, 100				// Si ocurre 100 veces, ya pas? el tiempo para modificar los leds
+	BREQ	TOGGLE	
+	RETI
+
+TOGGLE: 
+	LDI		R24, 0x00			// Se reinicia el contador de desbordes	
+	SBI		PINB, PB0			// Hace un toggle cada 500 ms para los leds
+	RETI
+
+//------------------------------------------ Rutina de interrupci?n del timer01 -----------------------------------------
+TIMER1_OVERFLOW: 	
+	// Guarda el estado del SREG
+	PUSH	R7
+	IN		R7, SREG
+	PUSH	R7
+	
+	LDI		R16, HIGH(VALOR_T1)			// Cargar el byte alto de 6942 (0x1B)
+	STS		TCNT1H, R16	
+	LDI		R16, LOW(VALOR_T1)			// Cargar el byte bajo de 6942 (0x1E)
+	STS		TCNT1L, R16
+
+	CPI		R17, 2
+	BREQ	SALIR_NO_TIMER	
+	CPI		R17, 3
+	BREQ	SALIR_NO_TIMER	
+	CPI		R17, 4
+	BREQ	SALIR_NO_TIMER				// Hay modos en los que no quiero usar el timer, me salgo
+	CPI		R17, 5
+	BREQ	SALIR_NO_TIMER	
+	
+	LDI		R20, 0x01					// Se utilizar? R20 para "indicar" que se debe realizar algo
+	RJMP	SALIR_NO_TIMER
+
+// Rutina segura para salir -> reestablece valor de SREG
+SALIR_NO_TIMER: 
+	POP		R7
+	OUT		SREG, R7
+	POP		R7
+	RETI
+
