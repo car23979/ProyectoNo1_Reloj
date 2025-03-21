@@ -862,3 +862,29 @@ VERIFY_DIAS:
 
 FIN_VERIFY_DIAS_MES:
     RET
+// -------------------------------------------------- Se decrementan los meses ----------------------------------------------------
+DEC_DISP_MES:
+	CPI		R29, 0x00				// Revisa si las decenas de mes son 0
+	BREQ	REVISAR_UNI_MES			// Si s?, revisa si las unidades tambi?n son 0
+	RJMP	DEC_MESESITO			// Sino, decrementa 
+
+REVISAR_UNI_MES: 
+	CPI		R28, 0x01
+	BREQ	RESET_DECENAS_MES		// Si ambos son 0, entonces resetea meses
+	RJMP	DEC_MESESITO			// Sino, sigue decrementando unidades
+
+DEC_MESESITO: 
+	DEC		R28						// R28 decrementar?
+	CPI		R28, 0xFF				// Si el contador llega a 0, reiniciar el contador
+	BRNE	SEGUIR3
+	LDI		R28, 0x09				// Si es 0, lo regresa a 9
+	DEC		R29						// Decrementa tambi?n las decenas
+	RET								// Regresa a main si ya decremento
+
+RESET_DECENAS_MES:
+	LDI		R28, 0x02
+	LDI		R29, 0x01				// Se corrigen valores para underflow		
+	RET	
+
+SEGUIR3:
+	RET
