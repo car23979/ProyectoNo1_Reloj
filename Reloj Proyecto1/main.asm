@@ -1290,3 +1290,57 @@ ISR_CONFIG_MIN:
 	SBIS	PINB, PB1			// Revisa activaci?n de bot?n dec
 	RJMP	ACT_DEC
 	RJMP	SALIR
+
+ISR_CONFIG_HOR:
+	// Se revisan los pb, dependiendo de si se activan se sabr? qu? acci?n realizar
+	SBIS	PINB, PB2			// Revisa activaci?n de bot?n inc
+	RJMP	ACT_INC
+	SBIS	PINB, PB1			// Revisa activaci?n de bot?n dec
+	RJMP	ACT_DEC
+	RJMP	SALIR
+
+ACT_INC: 
+	SBIS	PINB, PB2			// Revisa si est? presionado (0 -> apachado)
+	LDI		ACCION, 0x02		// Activa acci?n para PB0
+	RJMP	SALIR
+
+ACT_DEC: 
+	SBIS	PINB, PB1			// Revisa si est? presionado (0 -> apachado)
+	LDI		ACCION, 0x03		// Activa acci?n para PB0
+	RJMP	SALIR
+
+ISR_CONFIG_MES: 
+	// El modo reloj normal, ?nicamente quiero que sume en reloj normal	
+	SBIS	PINB, PB2			// Revisa activaci?n de bot?n inc
+	RJMP	ACT_INC
+	SBIS	PINB, PB1			// Revisa activaci?n de bot?n dec
+	RJMP	ACT_DEC
+	RJMP	SALIR
+
+ISR_CONFIG_DIA: 
+	// Se revisan los pb, dependiendo de si se activan se sabr? qu? acci?n realizar		
+	SBIS	PINB, PB2			// Revisa activaci?n de bot?n inc
+	RJMP	ACT_INC
+	SBIS	PINB, PB1			// Revisa activaci?n de bot?n dec
+	RJMP	ACT_DEC
+	RJMP	SALIR
+
+ISR_CONFIG_MIN_ALARM: 
+	// Se revisan los pb, dependiendo de si se activan se sabr? qu? acci?n realizar		
+	SBIS	PINB, PB2			// Revisa activaci?n de bot?n inc
+	RJMP	ACT_INC
+	SBIS	PINB, PB1			// Revisa activaci?n de bot?n dec
+	RJMP	ACT_DEC
+	RJMP	SALIR
+
+ISR_CONFIG_HOR_ALARM: 
+	// Se revisan los pb, dependiendo de si se activan se sabr? qu? acci?n realizar		
+	SBIS	PINB, PB2			// Revisa activaci?n de bot?n inc
+	RJMP	ACT_INC
+	SBIS	PINB, PB1			// Revisa activaci?n de bot?n dec
+	RJMP	ACT_DEC
+	RJMP	SALIR
+
+ISR_APAGAR_ALARMA: 
+	// El modo reloj normal, ?nicamente quiero que sume en reloj normal	
+	RJMP	SALIR
