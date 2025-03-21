@@ -23,6 +23,7 @@
  </OUTPUT_FILES>
  <LABELS>
   <START><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>38</LINE></START>
+  <ISR_PCINT0><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>1224</LINE></ISR_PCINT0>
   <TIMER1_OVERFLOW><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>1193</LINE></TIMER1_OVERFLOW>
   <TIMER0_OVF><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>1178</LINE></TIMER0_OVF>
   <TABLITA><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>34</LINE></TABLITA>
@@ -171,5 +172,20 @@
   <INCREMENTAR_DECENAS_MES><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>1099</LINE></INCREMENTAR_DECENAS_MES>
   <TOGGLE><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>1187</LINE></TOGGLE>
   <SALIR_NO_TIMER><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>1217</LINE></SALIR_NO_TIMER>
+  <SALIR><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>1273</LINE></SALIR>
+  <CAMBIO_MODO><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>1263</LINE></CAMBIO_MODO>
+  <CHECK_MODE><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>1240</LINE></CHECK_MODE>
+  <ISR_RELOJ_NORMAL><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>1279</LINE></ISR_RELOJ_NORMAL>
+  <ISR_FECHA_NORMAL><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>1282</LINE></ISR_FECHA_NORMAL>
+  <ISR_CONFIG_MIN><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>1286</LINE></ISR_CONFIG_MIN>
+  <ISR_CONFIG_HOR><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>1294</LINE></ISR_CONFIG_HOR>
+  <ISR_CONFIG_MES><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>1312</LINE></ISR_CONFIG_MES>
+  <ISR_CONFIG_DIA><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>1320</LINE></ISR_CONFIG_DIA>
+  <ISR_CONFIG_MIN_ALARM><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>1328</LINE></ISR_CONFIG_MIN_ALARM>
+  <ISR_CONFIG_HOR_ALARM><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>1336</LINE></ISR_CONFIG_HOR_ALARM>
+  <ISR_APAGAR_ALARMA><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>1344</LINE></ISR_APAGAR_ALARMA>
+  <OVER_MODO><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>1268</LINE></OVER_MODO>
+  <ACT_INC><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>1302</LINE></ACT_INC>
+  <ACT_DEC><FILE>C:\Users\Admin\Documents\GitHub\ProyectoNo1\ProyectoNo1_Reloj\Reloj Proyecto1\main.asm</FILE><LINE>1307</LINE></ACT_DEC>
  </LABELS>
 </ASSEMBLER_INFO>
