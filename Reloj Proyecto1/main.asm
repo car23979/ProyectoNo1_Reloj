@@ -1268,3 +1268,25 @@ CAMBIO_MODO:
 OVER_MODO: 
 	LDI		R17, 0x00
 	RJMP	SALIR
+
+// Rutina segura para salir -> reestablece valor de SREG
+SALIR: 
+	POP		R7
+	OUT		SREG, R7
+	POP		R7
+	RETI
+
+ISR_RELOJ_NORMAL:
+	// El modo reloj normal, ?nicamente quiero que sume en reloj normal
+	RJMP	SALIR
+ISR_FECHA_NORMAL: 
+	// El modo reloj normal, ?nicamente quiero que sume en reloj normal
+	RJMP	SALIR
+
+ISR_CONFIG_MIN:
+	// Se revisan los pb, dependiendo de si se activan se sabr? qu? acci?n realizar
+	SBIS	PINB, PB2			// Revisa activaci?n de bot?n inc
+	RJMP	ACT_INC
+	SBIS	PINB, PB1			// Revisa activaci?n de bot?n dec
+	RJMP	ACT_DEC
+	RJMP	SALIR
