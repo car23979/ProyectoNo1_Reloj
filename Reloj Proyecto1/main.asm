@@ -1220,3 +1220,40 @@ SALIR_NO_TIMER:
 	POP		R7
 	RETI
 
+// --------------------------------------Rutina de interrupci?n para revisar PB ----------------------------------------
+ISR_PCINT0: 
+	// Guarda el estado del SREG
+	PUSH	R7
+	IN		R7, SREG
+	PUSH	R7
+
+	IN		R9, PINB			// Se lee el pin
+	CP		R9, R18				// Se compara estado de los botones
+	BREQ	SALIR				// Si siguen siendo iguales, es porque no hubo cambio
+	MOV		R18, R9				// Copia el estado de botones
+
+	// PB4 -> Modo | PB2 -> Incrementa | PB1 -> Decrementa 
+	SBRS	R9, PB4				// Revisa activaci?n de boton de modo
+	RJMP	CAMBIO_MODO
+	RJMP	CHECK_MODE
+
+CHECK_MODE:	
+	CPI		R17, 0				// Revisa en qu? modo est?
+	BREQ	ISR_RELOJ_NORMAL
+	CPI		R17, 1
+	BREQ	ISR_FECHA_NORMAL
+	CPI		R17, 2
+	BREQ	ISR_CONFIG_MIN
+	CPI		R17, 3
+	BREQ	ISR_CONFIG_HOR
+	CPI		R17, 4	
+	BREQ	ISR_CONFIG_MES
+	CPI		R17, 5
+	BREQ	ISR_CONFIG_DIA
+	CPI		R17, 6	
+	BREQ	ISR_CONFIG_MIN_ALARM
+	CPI		R17, 7
+	BREQ	ISR_CONFIG_HOR_ALARM
+	CPI		R17, 8
+	BREQ	ISR_APAGAR_ALARMA		
+	RJMP	SALIR
