@@ -6,48 +6,26 @@
 
  Descripción: 
  */
-.include "M328PDEF.inc"
+//Encabezado
+.equ	VALOR_T1 = 0x0000
+//.equ	VALOR_T1 = 0xFF50
+.equ	VALOR_T0 = 0x00
+//.equ	VALOR_T1 = 0x1B1E
+//.equ	VALOR_T0 = 0xB2
+.def	ACCION = R21
+.cseg									// Codigo en la flash
 
-// Constantes
-.equ	TEMP_HORA_ALARMA_ADDR	= 0x0100	// Dirección en SRAM para la hora de la alarma
-.equ	TEMP_MIN_ALARMA_ADDR	= 0x0101	// Dirección en SRAM para los minutos de la alarma
-.equ	TEMP_HORA_ADDR			= 0x0102
-.equ	TEMP_MINUTO_ADDR		= 0x0103
-.equ	TEMP_DIA_ADDR			= 0x0104
-.equ	TEMP_MES_ADDR			= 0x0105
-.equ	VALOR_T1				= 0x03D0 
+.org	0x0000							// Donde inicia el programa
+	JMP	START							// Tiene que saltar para no ejecutar otros
 
-// Definición de registros
-.def	MODE = R22			// Modo de operación
-.def	COUNTER = R23		// Contador auxiliar para parpadeo
-.def	DISPLAY_INDEX = R24	// Indice para multiplexación
-.def	HORA	= R16		// Contador de horas
-.def    MINUTO	= R17		// Contador de minutos
-.def    SEGUNDO	= R18		// Contador de segundos
-.def    BLINK_COUNTER = R19	// Contador para parpadeo de los dos puntos
-.def	TEMP	= R25		// Registro temporal para cálculos intermedios
-// Definición para configuración de fecha
-.def	DIA	= R2			// Día actual
-.def	MES = R3			// Mes actual
-// Definición Alarma
-.def	HORA_ALARMA	= R4	// Configura hora para alarma
-.def	MIN_ALARMA	= R5	// Configura minutos para alarma
-.def	BUZZER_FLAG	= R6	// Indica si el buzzer está activo
+.org	PCI0addr						// Direcci?n donde est? el vector interrupci?n PORTB
+	JMP	ISR_PCINT0
 
+.org	OVF1addr						// Direcci?n del vector para timer1
+	JMP	TIMER1_OVERFLOW
 
-.cseg
-
-.ORG    0x0000
-    RJMP    INICIO  // Vector Reset
-
-.ORG    0x0002
-    RJMP    BOTON_ISR  // Vector de interrupción PCINT1
-
-.ORG    0x001A
-    RJMP    TIMER1_ISR
-
-.ORG	0x0020
-	RJMP	TIMER0_ISR
+.org	OVF0addr						// Direcci?n del vector para timer0
+	JMP	TIMER0_OVF
 
 
 //.def CONTADOR = R19  // Variable para el contador
