@@ -799,3 +799,66 @@ AJUSTAR_MES:
 	MOV		R26, R16				// Se actualiza el valor de las unidades
 	RET
 
+// ------------------------------------------------- Se incrementan los meses -------------------------------------------------------
+INC_DISP_MES:
+	CPI		R29, 0x01				// Se revisa si ya lleg? a mes 20
+	BREQ	REVISAR				
+	RJMP	SEGUIR_MESES
+
+REVISAR: 
+	CPI		R28, 0x02				// Se revisa si lleg? al mes 13
+	BREQ	RESET_MESES
+	RJMP	SEGUIR_MESES
+
+SEGUIR_MESES: 
+	INC		R28						// Si ya pasaron los d?as, se incrementa el mes
+	CPI		R28, 0x0A				// Se compara para ver si ya es 10
+	BRNE	SALIR_MESES
+	RJMP	INC_DECENAS_MES
+
+SALIR_MESES: 
+	RET
+
+INC_DECENAS_MES: 
+	LDI		R28, 0x00				// Resetear unidades del mes
+	INC		R29						// Incrementar decenas mes
+	RET
+
+RESET_MESES: 
+	LDI		R29, 0x00
+	LDI		R28, 0x01				// Se reinician los meses al 1 (enero) 
+	RET
+
+VERIFY_DIAS:
+    // Cargar la direcci?n de la tabla DIAS_POR_MES
+    LDI     ZL, LOW(DIAS_POR_MES<<1)
+    LDI     ZH, HIGH(DIAS_POR_MES<<1)
+
+    // Calcular el ?ndice del mes actual (mes - 1)
+	MOV		R6, R29					// Cargar decenas de mes
+	LSL		R6						// Correr a la izq -> X*2
+	MOV		R8, R6					// Se guarda el estado para poder sumar
+	LSL		R6						// Correr a la izq -> X*4
+	LSL		R6						// Correr a la izq -> X*8
+	ADD		R6, R8					// Se suman para -> X*10
+	MOV     R16, R28		        // Cargar unidades de mes
+	ADD		R16, R6					// Se suma la decena con la unidad del mes
+    DEC     R16                     // Restar 1 (la tabla empieza en 0)
+    ADD     ZL, R16                 // Meter el ?ndice a Z
+    LPM     R16, Z                  // Leer la cantidad de d?as del mes actual
+
+    // Comparar d?as actuales con d?as del mes
+    MOV     R10, R27		        // Cargar decenas de d?as
+    LSL	    R10                     // Convertir decenas a unidades (2 -> 20)
+								    // X*2 (Correr a la izquierda una vez)
+    MOV		R11, R10				// Guardamos el resultado temporalmente
+    LSL		R10						// X*4 (Otra vez a la izquierda)
+    LSL	    R10						// X*8 (Otra vez a la izquierda)
+    ADD		R10, R11				// (X*8) + (X*2) = X*10 
+    ADD     R10, R26		        // Sumar unidades de d?as (20 + 5 = 25)
+    CP      R10, R16                // Comparar con d?as del mes
+    BRLO    FIN_VERIFY_DIAS_MES		// Si es menor, no hacer nada
+    CALL    RESET_DIAS				// Si es igual o mayor, reiniciar d?as
+
+FIN_VERIFY_DIAS_MES:
+    RET
