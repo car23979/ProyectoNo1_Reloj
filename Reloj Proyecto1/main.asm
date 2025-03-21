@@ -9,43 +9,44 @@
 .include "M328PDEF.inc"
 
 // Constantes
-.equ	TEMP_HORA_ALARMA_ADDR	= 0x0104	// Dirección en SRAM para la hora de la alarma
-.equ	TEMP_MIN_ALARMA_ADDR	= 0x0105	// Dirección en SRAM para los minutos de la alarma
-.equ	TEMP_HORA_ADDR			= 0x0106
-.equ	TEMP_MINUTO_ADDR		= 0x0107
-.equ	TEMP_DIA_ADDR			= 0x0108
-.equ	TEMP_MES_ADDR			= 0x0109 
+.equ	TEMP_HORA_ALARMA_ADDR	= 0x0100	// Dirección en SRAM para la hora de la alarma
+.equ	TEMP_MIN_ALARMA_ADDR	= 0x0101	// Dirección en SRAM para los minutos de la alarma
+.equ	TEMP_HORA_ADDR			= 0x0102
+.equ	TEMP_MINUTO_ADDR		= 0x0103
+.equ	TEMP_DIA_ADDR			= 0x0104
+.equ	TEMP_MES_ADDR			= 0x0105
+.equ	VALOR_T1				= 0x1B1E 
 
 // Definición de registros
-.def	MODE = R20			// Modo de operación
-.def	COUNTER = R21		// Contador auxiliar para parpadeo
-.def	DISPLAY_INDEX = R22	// Indice para multiplexación
+.def	MODE = R22			// Modo de operación
+.def	COUNTER = R23		// Contador auxiliar para parpadeo
+.def	DISPLAY_INDEX = R24	// Indice para multiplexación
 .def	HORA	= R16		// Contador de horas
 .def    MINUTO	= R17		// Contador de minutos
 .def    SEGUNDO	= R18		// Contador de segundos
 .def    BLINK_COUNTER = R19	// Contador para parpadeo de los dos puntos
-.def	TEMP	= R23		// Registro temporal para cálculos intermedios
+.def	TEMP	= R25		// Registro temporal para cálculos intermedios
 // Definición para configuración de fecha
-.def	DIA	= R24			// Día actual
-.def	MES = R25			// Mes actual
+.def	DIA	= R2			// Día actual
+.def	MES = R3			// Mes actual
 // Definición Alarma
-.def	HORA_ALARMA	= R26	// Configura hora para alarma
-.def	MIN_ALARMA	= R27	// Configura minutos para alarma
-.def	BUZZER_FLAG	= R28	// Indica si el buzzer está activo
+.def	HORA_ALARMA	= R4	// Configura hora para alarma
+.def	MIN_ALARMA	= R5	// Configura minutos para alarma
+.def	BUZZER_FLAG	= R6	// Indica si el buzzer está activo
 
 .cseg
 
 .ORG    0x0000
     RJMP    INICIO  // Vector Reset
 
-.ORG    0x0020
-    RJMP    TIMER1_ISR  // Vector de interrupción PCINT1
+.ORG    0x0002
+    RJMP    BOTON_ISR  // Vector de interrupción PCINT1
 
-.ORG    0x0030
-    RJMP    TIMER0_ISR
+.ORG    0x001A
+    RJMP    TIMER1_ISR
 
-.ORG	PCI1addr
-	RJMP	BOTON_ISR
+.ORG	0x0020
+	RJMP	TIMER0_ISR
 
 
 //.def CONTADOR = R19  // Variable para el contador
@@ -56,6 +57,7 @@ INICIO:
 	CALL	CONFIGURAR_RELOJ
 	CALL	CONFIGURAR_PUERTOS
 	CALL	CONFIGURAR_TIMERS
+	CALL	CONFIGURAR_BOTONES
 
 	SEI		// Habilita interrupciones globales
 	RJMP	MAIN
@@ -182,8 +184,10 @@ CONFIRMAR:
 	BRNE	VERIFICAR_FECHA
 
 	// Si estamos en modo configuración de hora (mode=1)
-	MOV		HORA, TEMP_HORA
-	MOV		MINUTO, TEMP_MINUTO
+	LDS		R16, TEMP_HORA_ADDR
+	MOV		HORA, R16
+	LDS		R16, TEMP_MINUTO_ADDR
+	MOV		MINUTO, R16
 	RJMP	FIN_CONFIRMAR
 
 
@@ -193,8 +197,10 @@ VERIFICAR_FECHA:
 	BRNE	VERIFICAR_ALARMA
 
 	// Si estamos en modo de configuración de fecha (mode=2)
-	MOV		DIA, TEMP_DIA
-	MOV		MES, TEMP_MES
+	LDS		R16, TEMP_DIA_ADDR
+	MOV		DIA, R16
+	LDS		R16, TEMP_MES_ADDR
+	MOV		MES, R16
 	RJMP	FIN_CONFIRMAR
 
 VERIFICAR_ALARMA:
@@ -391,7 +397,7 @@ NORMAL_DEC_ALARMA:
 	DEC		R16
 
 FIN_DEC_ALARMA:
-	STS		TEMP_HORA_ALARMA_ADDR
+	STS		TEMP_HORA_ALARMA_ADDR, R16
 	RET
 
 
@@ -502,15 +508,6 @@ CARGAR_NUMERO:
 	OUT		SREG, R16
 	POP		R16
 	RETI
-/*
-    INC     UNIDADES  // Incrementar unidades
-    CPI     UNIDADES, 10
-    BRNE    FIN_ISR  // Si no es 10, salir
-    CALL    ACTUALIZAR_DECENAS
-    CPI     CONTADOR_D, 6
-    BRNE    FIN_ISR
-    CLR     CONTADOR_D  // Reiniciar decenas
-	*/
 
 FIN_ISR:
     CALL    ACTUALIZAR_DISPLAY
@@ -518,6 +515,10 @@ FIN_ISR:
     OUT     SREG, R16
     POP     R16
     RETI
+
+ACTUALIZAR_DISPLAY:
+    // Código para actualizar el display
+    RET
 
 // Tabla de segmentos (ánodo común)
 TABLA_DISPLAY:
@@ -527,3 +528,5 @@ TABLA_DISPLAY:
 DIAS_MAX:
 	.DB 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31	// Enero - Diciembre
 
+DIGITO_DISPLAY:
+    .DB 0x01, 0x02, 0x04, 0x08  // Patrones para seleccionar displays
